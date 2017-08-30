@@ -99,7 +99,7 @@ options(DT.options = list(paging=FALSE))
   DF <- reactive({ #this section adds the GW points only including top X as specified 
   gwpoints<- data.frame(transpose(subset(gameweekpoints,gameweekpoints$Player == input$p)[,2:3])[2,])
   names(gwpoints) <- c(transpose(subset(gameweekpoints,gameweekpoints$Player == input$p)[,2:3])[1,])
-  gwpoints<- cbind(a="",b="",c="",d="",e="",f="",f1="",g="TOTAL",h="TOTAL",gwpoints)
+  gwpoints<- cbind(a="",b="",c="",d="",e="",f="",f1="",f2="",g="TOTAL",h="TOTAL",gwpoints)
   names(gwpoints) <- names(datasetInput())
   q<- rbind(datasetInput(),gwpoints)
   q$`GW points` <- as.numeric(q$`GW points`)
@@ -107,8 +107,8 @@ options(DT.options = list(paging=FALSE))
   q
   })
   
-  output$playerscores <- DT::renderDataTable(datatable(DF()[-c(1,9)],rownames=FALSE,options=list(order=list(3,'desc'),scrollX=TRUE)) %>% #-1 excludes ID columns, -9 picked by col
-    formatStyle(colnames(DF())[c(5,10:ncol(DF()))],Color = styleInterval(c(0.769),c('black','green')))) #10 is the column number of first round column
+  output$playerscores <- DT::renderDataTable(datatable(DF()[-c(1,9,10)],rownames=FALSE,options=list(order=list(3,'desc'),scrollX=TRUE)) %>% #-1 excludes ID columns, -9 picked by col
+    formatStyle(colnames(DF())[c(5,11:ncol(DF()))],Color = styleInterval(c(0.769),c('black','green')))) #10 is the column number of first round column
   #change 0.769 to 0.740 after 27th player added
   
   ##################LEAGUE TABLE##############
@@ -124,7 +124,7 @@ options(DT.options = list(paging=FALSE))
   leagueTable<-merge(overallTable,thisWeek,by="Player")
   leagueTable <- merge(leagueTable,playersTeamPlayed,by.y="Picked by",by.x="Player")
   leagueTable <- leagueTable[,c(1,5,4,7)]
-  names(leagueTable) <- c("Player","Total points","This round points","Teams played")
+  names(leagueTable) <- c("Player","Total points",paste0("GW",ffdata$`current-event`," Points"),paste0("GW",unique(ffdata$next_event_fixtures$event)," Teams played"))
 
   output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE))
   
