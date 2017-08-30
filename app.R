@@ -12,14 +12,24 @@ library(shinydashboard)
 server<-shinyServer(function(input, output) {
 scorelist <- list()
 ffdata <- fromJSON('https://fantasy.premierleague.com/drf/bootstrap-static')
+
+homeTeamsStarted <- ffdata$next_event_fixtures[,c('team_h','started')]
+awayTeamsStarted <- ffdata$next_event_fixtures[,c('team_a','started')]
+names(homeTeamsStarted) <- c("id","started")
+names(awayTeamsStarted) <- c("id","started")
+teamsStarted <- rbind(homeTeamsStarted,awayTeamsStarted)
+teamsStarted<- merge(teamsStarted,ffdata$teams,by="id")[,c('code','started')]
+names(teamsStarted) <- c("team_code","started")
+
 players_noteam <- ffdata$elements[,c("id","web_name","element_type","team_code","event_points","total_points","news","points_per_game")]
 teams <- ffdata$teams[,c("name","code")]
 colnames(teams) <- c("name","team_code")
 players <- (merge(players_noteam, teams, by = 'team_code'))
-players<- players[ , !(names(players) == 'team_code')]
+players <- (merge(players,teamsStarted, by = 'team_code'))
+players <- players[ , !(names(players) == 'team_code')]
 players$element_type <- recode(players$element_type, "1" = "GK", "2" = "Def", "3" = "Mid", "4" = "Atk")
 ppg<- players[,c("web_name","element_type","name","points_per_game")]
-players <- players[,c(1,2,3,8,4,5,6)] #reorder columns
+players <- players[,c(1,2,3,8,4,5,6,9)] #reorder columns
 picks <- read.csv("www/picks.csv") 
 playerscopy <- players
 players <- merge(players,picks,by='id')
@@ -28,7 +38,7 @@ notpicked <- subset(playerscopy, !(id %in% players$id))
 
 names(notpicked) <- c("id","Name","Position","Team","GW points","Total points","News")
 names(playerscopy) <- c("id","Name","Position","Team","GW points","Total points","News")
-colnames(players) <- c("id","Name","Position","Team","GW points","Total points","News","Picked by")
+colnames(players) <- c("id","Name","Position","Team","GW points","Total points","News","Team started","Picked by")
 names(ppg) <- c("Name","Position","Team","PPG")
 ppg$PPG <- as.numeric(ppg$PPG)
 
@@ -60,7 +70,7 @@ assign("David",finaldf$David)
 assign("Hodge",finaldf$Hodge)
 assign("Luke",finaldf$Luke)
 for(q in c("Tom","Warnes","David","Hodge","Luke")){
-gwscores<-apply(get(q)[10:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #change 2 to number of scored players
+gwscores<-apply(get(q)[11:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #change 2 to number of scored players
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
 assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   group_by(q) %>%
@@ -71,6 +81,8 @@ assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
 gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsDavid,gwpointsHodge,gwpointsLuke)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
 gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
+
+
 
 #Define server logic required to summarize and view the selected data
 options(DT.options = list(paging=FALSE))
@@ -103,8 +115,17 @@ options(DT.options = list(paging=FALSE))
   
   overallTable <- aggregate(. ~ Player, data=gameweekpoints[,c(1,3)], sum)
   thisWeek <- subset(gameweekpoints,gameweekpoints$Week==max(gameweekpoints$Week))
-  leagueTable<-merge(overallTable,thisWeek,by="Player")[,c(1,2,4)]
-  names(leagueTable) <- c("Player","Total points","This round points")
+  playersTeamPlayed <- players %>%
+    group_by(`Picked by`,`Team started`) %>%
+    count()
+  playersTeamPlayed <- as.data.frame(playersTeamPlayed)
+  playersTeamPlayed <- playersTeamPlayed[playersTeamPlayed$`Team started`=='FALSE',]
+  playersTeamPlayed$n <- playersTeamPlayed$n - 26
+  leagueTable<-merge(overallTable,thisWeek,by="Player")
+  leagueTable <- merge(leagueTable,playersTeamPlayed,by.y="Picked by",by.x="Player")
+  leagueTable <- leagueTable[,c(1,5,4,7)]
+  names(leagueTable) <- c("Player","Total points","This round points","Teams played")
+
   output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE))
   
   output$graph <-renderPlot(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +scale_x_continuous(breaks= c(1:38)))
