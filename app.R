@@ -9,7 +9,7 @@ library(shinydashboard)
 #setwd("H:/Personal/Fantasy/FantasyScores")
 
 #load current scores from RDS file
-server<-shinyServer(function(input, output) {
+server<-shinyServer(function(input, output,session) {
 scorelist <- list()
 ffdata <- fromJSON('https://fantasy.premierleague.com/drf/bootstrap-static')
 
@@ -145,7 +145,7 @@ options(DT.options = list(paging=FALSE))
       write.csv(ffdata$elements, file, row.names = FALSE)
     }
   )
-  
+  session$onSessionEnded(stopApp)
 }) #end of shiny section
 
 
@@ -154,19 +154,19 @@ options(DT.options = list(paging=FALSE))
 ui<- dashboardPage(skin='green',
               dashboardHeader(title='Fantasy Scores'),
               dashboardSidebar(sidebarMenu(id="FantMenu",
+                menuItem("League Table",tabName="LeagueTable",icon=icon("list-ol")),                                           
                 menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol-o")),
-                menuItem("League Table",tabName="LeagueTable",icon=icon("list-ol")),
                 menuItem("Statistics", tabName="Stats",icon=icon("table")),
                 downloadButton("downloadData","Download All Player Data",class="butt"),
                 tags$head(tags$style(".butt{background-color:#00a65a;} .butt{color: white !important} .butt{margin: 15px}"))
               )),
               dashboardBody(
                 tabItems(
+                tabItem(tabName="LeagueTable",
+                fluidRow(DT::dataTableOutput('league'),plotOutput("graph"))),
                 tabItem(tabName="PlayerScores",
                 fluidRow(selectInput("p","Player:",c("Tom","Warnes","David","Hodge","Luke"))),
                 fluidRow(DT::dataTableOutput("playerscores"))),
-                tabItem(tabName="LeagueTable",
-                fluidRow(DT::dataTableOutput('league'),plotOutput("graph"))),
                 tabItem(tabName="Stats",
                 fluidRow(box(DT::dataTableOutput('notpicked'),width=4,title="Top scoring non-picked players"),
                 box(DT::dataTableOutput('topoverall'),width=4,title="Top scoring players overall"),
