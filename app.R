@@ -45,8 +45,8 @@ ppg$PPG <- as.numeric(ppg$PPG)
 
 for(i in 1:nrow(players)){
   individual <- fromJSON(paste0("https://fantasy.premierleague.com/drf/element-summary/",players[i,]$id))
-  roundscores <- transpose(individual$history[,c("round","total_points")])
-  minsplayed <- individual$history[individual$history$round==max(individual$history$round),][,c("minutes")]
+  tryCatch({roundscores <- transpose(individual$history[,c("round","total_points")])},error=function(e){roundscores <<- as.data.frame(matrix(c(1,2,3,0,0,0), nrow=2, ncol=3,byrow=TRUE))})
+  tryCatch({minsplayed <- individual$history[individual$history$round==max(individual$history$round),][,c("minutes")]},error=function(e){minsplayed<<-0},warning=function(w){minsplayed<<-0})
   names(roundscores) <- c(roundscores[1,])
   temp <- names(roundscores) #store names for reassignment
   roundscores <- data.frame(roundscores[2,])
@@ -58,6 +58,19 @@ for(i in 1:nrow(players)){
 }
 
 allplayers <- dplyr::bind_rows(scorelist)
+#SEPTEMBER PICKS - IGNORE FIRST THREE GAMEWEEKS
+allplayers <- within(allplayers, `1`[id %in% c('513','512','518','543','536')] <- '0')
+allplayers <- within(allplayers, `2`[id %in% c('513','512','518','543','536')] <- '0')
+allplayers <- within(allplayers, `3`[id %in% c('513','512','518','543','536')] <- '0')
+
+#TRANSFERS - replace gameweeks with those of player transferred out
+allplayers[allplayers$Name=='Sanches',11:13] <- allplayers[allplayers$Name=='Llorente',11:13] #Sanches in for Llorente
+
+allplayers<-allplayers[!allplayers$Name %in%c('Llorente'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$Name %in%c('Llorente'),] 
+
+allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
+
 #e<- names(allplayers)
 #e[10:47] <- c(1:38)
 #allplayers <- allplayers[,e] #put in right order after bind_rows puts NA values at end
@@ -120,7 +133,7 @@ options(DT.options = list(paging=FALSE))
     count()
   playersTeamPlayed <- as.data.frame(playersTeamPlayed)
   playersTeamPlayed <- playersTeamPlayed[playersTeamPlayed$`Team started`=='FALSE',]
-  playersTeamPlayed$n <- playersTeamPlayed$n - 26
+  playersTeamPlayed$n <- playersTeamPlayed$n - 27
   leagueTable<-merge(overallTable,thisWeek,by="Player")
   leagueTable <- merge(leagueTable,playersTeamPlayed,by.y="Picked by",by.x="Player")
   leagueTable <- leagueTable[,c(1,5,4,7)]
