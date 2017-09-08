@@ -158,6 +158,13 @@ options(DT.options = list(paging=FALSE))
       write.csv(ffdata$elements, file, row.names = FALSE)
     }
   )
+  
+  #####TRANSFERS######
+  
+  transfersDF <- data.frame(Player="Hodge",In="Sanches (SWA)",Out="Llorente (TOT)",Date="07/09/2017")
+
+  output$transfers <- DT::renderDataTable(datatable(transfersDF))
+  
   session$onSessionEnded(stopApp)
 }) #end of shiny section
 
@@ -169,6 +176,7 @@ ui<- dashboardPage(skin='green',
               dashboardSidebar(sidebarMenu(id="FantMenu",
                 menuItem("League Table",tabName="LeagueTable",icon=icon("list-ol")),                                           
                 menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol-o")),
+                menuItem("Transfers", tabName="Transfers",icon=icon("exchange")),
                 menuItem("Statistics", tabName="Stats",icon=icon("table")),
                 downloadButton("downloadData","Download All Player Data",class="butt"),
                 tags$head(tags$style(".butt{background-color:#00a65a;} .butt{color: white !important} .butt{margin: 15px}"))
@@ -183,8 +191,10 @@ ui<- dashboardPage(skin='green',
                 tabItem(tabName="Stats",
                 fluidRow(box(DT::dataTableOutput('notpicked'),width=4,title="Top scoring non-picked players"),
                 box(DT::dataTableOutput('topoverall'),width=4,title="Top scoring players overall"),
-                box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game"))
-))))
+                box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game"))),
+                tabItem(tabName="Transfers",
+                fluidRow(DT::dataTableOutput("transfers")))
+              )))
 
                         
 shinyApp(ui = ui, server = server)
