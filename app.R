@@ -42,7 +42,7 @@ colnames(players) <- c("id","Name","Position","Team","GW points","Total points",
 names(ppg) <- c("Name","Position","Team","PPG")
 ppg$PPG <- as.numeric(ppg$PPG)
 
-
+withProgress(message = 'Loading...', value = 0,{
 for(i in 1:nrow(players)){
   individual <- fromJSON(paste0("https://fantasy.premierleague.com/drf/element-summary/",players[i,]$id))
   tryCatch({roundscores <- transpose(individual$history[,c("round","total_points")])},error=function(e){roundscores <<- as.data.frame(matrix(c(1,2,3,0,0,0), nrow=2, ncol=3,byrow=TRUE))})
@@ -55,7 +55,8 @@ for(i in 1:nrow(players)){
   player_with_scores$`GW minutes` <- minsplayed
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
   scorelist[[i]] <- player_with_scores
-}
+  incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
+}})
 
 allplayers <- dplyr::bind_rows(scorelist)
 #SEPTEMBER PICKS - IGNORE FIRST THREE GAMEWEEKS
