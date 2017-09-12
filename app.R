@@ -13,23 +13,14 @@ server<-shinyServer(function(input, output,session) {
 scorelist <- list()
 ffdata <- fromJSON('https://fantasy.premierleague.com/drf/bootstrap-static')
 
-homeTeamsStarted <- ffdata$next_event_fixtures[,c('team_h','started')]
-awayTeamsStarted <- ffdata$next_event_fixtures[,c('team_a','started')]
-names(homeTeamsStarted) <- c("id","started")
-names(awayTeamsStarted) <- c("id","started")
-teamsStarted <- rbind(homeTeamsStarted,awayTeamsStarted)
-teamsStarted<- merge(teamsStarted,ffdata$teams,by="id")[,c('code','started')]
-names(teamsStarted) <- c("team_code","started")
-
 players_noteam <- ffdata$elements[,c("id","web_name","element_type","team_code","event_points","total_points","news","points_per_game")]
 teams <- ffdata$teams[,c("name","code")]
 colnames(teams) <- c("name","team_code")
 players <- (merge(players_noteam, teams, by = 'team_code'))
-players <- (merge(players,teamsStarted, by = 'team_code'))
 players <- players[ , !(names(players) == 'team_code')]
 players$element_type <- recode(players$element_type, "1" = "GK", "2" = "Def", "3" = "Mid", "4" = "Atk")
 ppg<- players[,c("web_name","element_type","name","points_per_game")]
-players <- players[,c(1,2,3,8,4,5,6,9)] #reorder columns
+players <- players[,c(1,2,3,8,4,5,6)] #reorder columns
 picks <- read.csv("www/picks.csv") 
 playerscopy <- players
 players <- merge(players,picks,by='id')
@@ -38,7 +29,7 @@ notpicked <- subset(playerscopy, !(id %in% players$id))
 
 names(notpicked) <- c("id","Name","Position","Team","GW points","Total points","News")
 names(playerscopy) <- c("id","Name","Position","Team","GW points","Total points","News")
-colnames(players) <- c("id","Name","Position","Team","GW points","Total points","News","Team started","Picked by")
+colnames(players) <- c("id","Name","Position","Team","GW points","Total points","News","Picked by")
 names(ppg) <- c("Name","Position","Team","PPG")
 ppg$PPG <- as.numeric(ppg$PPG)
 
@@ -54,11 +45,14 @@ for(i in 1:nrow(players)){
   player_with_scores <- cbind(players[i,],roundscores)
   player_with_scores$`GW minutes` <- minsplayed
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
+  started <- individual$explain$fixture$started
+  player_with_scores <- cbind(player_with_scores,started)
   scorelist[[i]] <- player_with_scores
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
 
 allplayers <- dplyr::bind_rows(scorelist)
+allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
 #SEPTEMBER PICKS - IGNORE FIRST THREE GAMEWEEKS
 allplayers <- within(allplayers, `1`[id %in% c('513','512','518','543','536')] <- '0')
 allplayers <- within(allplayers, `2`[id %in% c('513','512','518','543','536')] <- '0')
@@ -84,7 +78,7 @@ assign("David",finaldf$David)
 assign("Hodge",finaldf$Hodge)
 assign("Luke",finaldf$Luke)
 for(q in c("Tom","Warnes","David","Hodge","Luke")){
-gwscores<-apply(get(q)[11:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #change 2 to number of scored players
+gwscores<-apply(get(q)[11:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #20 is scored players. 
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
 assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   group_by(q) %>%
@@ -129,16 +123,16 @@ options(DT.options = list(paging=FALSE))
   
   overallTable <- aggregate(. ~ Player, data=gameweekpoints[,c(1,3)], sum)
   thisWeek <- subset(gameweekpoints,gameweekpoints$Week==max(gameweekpoints$Week))
-  playersTeamPlayed <- players %>%
-    group_by(`Picked by`,`Team started`) %>%
+  
+  playersStarted <- allplayers %>% #count number of players whose game this GW has started
+    group_by(`Picked by`,`started`) %>%
     count()
-  playersTeamPlayed <- as.data.frame(playersTeamPlayed)
-  playersTeamPlayed <- playersTeamPlayed[playersTeamPlayed$`Team started`=='FALSE',]
-  playersTeamPlayed$n <- playersTeamPlayed$n - 27
+
+  playersStarted <- subset(playersStarted,playersStarted$started=='TRUE')[,c(1,3)]
   leagueTable<-merge(overallTable,thisWeek,by="Player")
-  leagueTable <- merge(leagueTable,playersTeamPlayed,by.y="Picked by",by.x="Player")
-  leagueTable <- leagueTable[,c(1,5,4,7)]
-  names(leagueTable) <- c("Player","Total points",paste0("GW",ffdata$`current-event`," Points"),paste0("GW",unique(ffdata$next_event_fixtures$event)," Teams played"))
+  leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
+  leagueTable <- leagueTable[,c(1,5,4,6)]
+  names(leagueTable) <- c("Player","Total points","This GW","Teams played")
 
   output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE))
   
