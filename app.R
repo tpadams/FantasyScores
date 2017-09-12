@@ -47,7 +47,7 @@ for(i in 1:nrow(players)){
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
   started <- individual$explain$fixture$started
   player_with_scores <- cbind(player_with_scores,started)
-  scorelist[[i]] <- player_with_scores
+  scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
 
@@ -145,6 +145,10 @@ options(DT.options = list(paging=FALSE))
   
   output$ppg <- DT::renderDataTable(datatable(head(ppg[with(ppg,order(-`PPG`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
   
+  notpicked$Team <- as.factor(notpicked$Team)
+  notpicked$Position <- as.factor(notpicked$Position)
+  output$finder <- DT::renderDataTable(datatable(notpicked[c(2,3,4,6)][(notpicked$`Total points` < input$slider1),],rownames=FALSE,filter='top',options=list(dom='t',order=list(3,'desc'))))
+  
   #####DOWNLOAD PLAYER DATA#####
   
   output$downloadData <- downloadHandler(
@@ -173,6 +177,7 @@ ui<- dashboardPage(skin='green',
                 menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol-o")),
                 menuItem("Transfers", tabName="Transfers",icon=icon("exchange")),
                 menuItem("Statistics", tabName="Stats",icon=icon("table")),
+                menuItem("Player finder", tabName="PlayerFinder",icon=icon("search")),
                 downloadButton("downloadData","Download All Player Data",class="butt"),
                 tags$head(tags$style(".butt{background-color:#00a65a;} .butt{color: white !important} .butt{margin: 15px}"))
               )),
@@ -187,6 +192,9 @@ ui<- dashboardPage(skin='green',
                 fluidRow(box(DT::dataTableOutput('notpicked'),width=4,title="Top scoring non-picked players"),
                 box(DT::dataTableOutput('topoverall'),width=4,title="Top scoring players overall"),
                 box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game"))),
+                tabItem(tabName="PlayerFinder",
+                fluidRow(sliderInput("slider1",label="Points:",min=0,max=50,value=5)),
+                fluidRow(DT::dataTableOutput("finder"))),
                 tabItem(tabName="Transfers",
                 fluidRow(DT::dataTableOutput("transfers")))
               )))
