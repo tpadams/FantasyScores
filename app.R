@@ -147,7 +147,7 @@ options(DT.options = list(paging=FALSE))
   
   notpicked$Team <- as.factor(notpicked$Team)
   notpicked$Position <- as.factor(notpicked$Position)
-  output$finder <- DT::renderDataTable(datatable(notpicked[c(2,3,4,6)][(notpicked$`Total points` < input$slider1),],rownames=FALSE,filter='top',options=list(dom='t',order=list(3,'desc'),scrollX=TRUE)))
+  output$finder <- DT::renderDataTable(datatable(notpicked[c(2,3,4,6)][(notpicked$`Total points` <= input$slider1),],rownames=FALSE,filter='top',options=list(dom='t',order=list(3,'desc'),scrollX=TRUE)))
   
   #####DOWNLOAD PLAYER DATA#####
   
