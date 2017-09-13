@@ -147,7 +147,8 @@ options(DT.options = list(paging=FALSE))
   
   notpicked$Team <- as.factor(notpicked$Team)
   notpicked$Position <- as.factor(notpicked$Position)
-  output$finder <- DT::renderDataTable(datatable(notpicked[c(2,3,4,6)][(notpicked$`Total points` <= input$slider1),],rownames=FALSE,filter='top',options=list(dom='t',order=list(3,'desc'),scrollX=TRUE)))
+  finderData <- merge(ffdata$elements,notpicked, by='id') 
+  output$finder <- DT::renderDataTable(datatable(finderData[,c('Name','Position','Team','Total points',input$Columns)],rownames=FALSE,filter='top',options=list(dom='t',order=list(3,'desc'),scrollX=TRUE)))
   
   #####DOWNLOAD PLAYER DATA#####
   
@@ -177,7 +178,7 @@ ui<- dashboardPage(skin='green',
                 menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol-o")),
                 menuItem("Transfers", tabName="Transfers",icon=icon("exchange")),
                 menuItem("Statistics", tabName="Stats",icon=icon("table")),
-                menuItem("Player finder", tabName="PlayerFinder",icon=icon("search")),
+                menuItem("Available players", tabName="PlayerFinder",icon=icon("search")),
                 downloadButton("downloadData","Download All Player Data",class="butt"),
                 tags$head(tags$style(".butt{background-color:#00a65a;} .butt{color: white !important} .butt{margin: 15px}"))
               )),
@@ -193,7 +194,12 @@ ui<- dashboardPage(skin='green',
                 box(DT::dataTableOutput('topoverall'),width=4,title="Top scoring players overall"),
                 box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game"))),
                 tabItem(tabName="PlayerFinder",
-                fluidRow(sliderInput("slider1",label="Points:",min=0,max=50,value=5)),
+                fluidRow(checkboxGroupInput("Columns",label = "Select columns:",
+                                            choices = c("GW points","News","points_per_game","minutes","goals_scored","assists",
+                                                        "clean_sheets","goals_conceded","penalties_saved","penalties_missed","own_goals","yellow_cards",
+                                                        "red_cards","saves","bonus","ict_index"), 
+                                            selected = c(),
+                                            width = '400%', inline = TRUE)),
                 fluidRow(DT::dataTableOutput("finder"))),
                 tabItem(tabName="Transfers",
                 fluidRow(DT::dataTableOutput("transfers")))
