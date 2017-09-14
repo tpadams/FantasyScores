@@ -33,7 +33,7 @@ colnames(players) <- c("id","Name","Position","Team","GW points","Total points",
 names(ppg) <- c("Name","Position","Team","PPG")
 ppg$PPG <- as.numeric(ppg$PPG)
 
-
+withProgress(message = 'Loading...', value = 0,{
 for(i in 1:nrow(players)){
   individual <- fromJSON(paste0("https://fantasy.premierleague.com/drf/element-summary/",players[i,]$id))
   tryCatch({roundscores <- transpose(individual$history[,c("round","total_points")])},error=function(e){roundscores <<- as.data.frame(matrix(c(1,2,3,0,0,0), nrow=2, ncol=3,byrow=TRUE))})
@@ -47,8 +47,9 @@ for(i in 1:nrow(players)){
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
   started <- individual$explain$fixture$started
   player_with_scores <- cbind(player_with_scores,started)
-  scorelist[[i]] <- player_with_scores
-}
+  scorelist[[i]] <- player_with_scores #}
+  incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
+}})
 
 allplayers <- dplyr::bind_rows(scorelist)
 allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
@@ -144,6 +145,11 @@ options(DT.options = list(paging=FALSE))
   
   output$ppg <- DT::renderDataTable(datatable(head(ppg[with(ppg,order(-`PPG`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
   
+  notpicked$Team <- as.factor(notpicked$Team)
+  notpicked$Position <- as.factor(notpicked$Position)
+  finderData <- merge(ffdata$elements,notpicked, by='id') 
+  output$finder <- DT::renderDataTable(datatable(finderData[,c('Name','Position','Team','Total points',input$Columns)],rownames=FALSE,filter='top',options=list(dom='t',order=list(3,'desc'),scrollX=TRUE)))
+  
   #####DOWNLOAD PLAYER DATA#####
   
   output$downloadData <- downloadHandler(
@@ -172,6 +178,7 @@ ui<- dashboardPage(skin='green',
                 menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol-o")),
                 menuItem("Transfers", tabName="Transfers",icon=icon("exchange")),
                 menuItem("Statistics", tabName="Stats",icon=icon("table")),
+                menuItem("Available players", tabName="PlayerFinder",icon=icon("search")),
                 downloadButton("downloadData","Download All Player Data",class="butt"),
                 tags$head(tags$style(".butt{background-color:#00a65a;} .butt{color: white !important} .butt{margin: 15px}"))
               )),
@@ -186,6 +193,17 @@ ui<- dashboardPage(skin='green',
                 fluidRow(box(DT::dataTableOutput('notpicked'),width=4,title="Top scoring non-picked players"),
                 box(DT::dataTableOutput('topoverall'),width=4,title="Top scoring players overall"),
                 box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game"))),
+                tabItem(tabName="PlayerFinder",
+                fluidRow(checkboxGroupInput("Columns",label = "Select columns:",
+                                            choiceValues = c("GW points","News","points_per_game","minutes","goals_scored","assists",
+                                                        "clean_sheets","goals_conceded","penalties_saved","penalties_missed","own_goals","yellow_cards",
+                                                        "red_cards","saves","bonus","ict_index"),
+                                            choiceNames = c("Current gameweek","News","Points per game","Total minutes","Goals","Assists","Clean sheets",
+                                                            "Goals conceded","Penalties saved","Penalties missed","Own goals","Yellows","Red","Saves",
+                                                            "Bonus points","ICT index"),
+                                            selected = c(),
+                                            width = '100%', inline = TRUE)),
+                fluidRow(DT::dataTableOutput("finder"))),
                 tabItem(tabName="Transfers",
                 fluidRow(DT::dataTableOutput("transfers")))
               )))
