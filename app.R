@@ -128,7 +128,8 @@ options(DT.options = list(paging=FALSE))
     group_by(`Picked by`,`started`) %>%
     count()
 
-  playersStarted <- subset(playersStarted,playersStarted$started=='TRUE')[,c(1,3)]
+  playersStarted <- subset(playersStarted,playersStarted$started=='FALSE')[,c(1,3)]
+  playersStarted$n <- 27- playersStarted$n
   leagueTable<-merge(overallTable,thisWeek,by="Player")
   leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
   leagueTable <- leagueTable[,c(1,5,4,6)]
