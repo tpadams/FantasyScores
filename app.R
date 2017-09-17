@@ -6,7 +6,7 @@ library(dplyr)
 library(ggplot2)
 library(DT)
 library(shinydashboard)
-#setwd("H:/Personal/Fantasy/FantasyScores")
+#setwd("~/GitHub/FantasyScores/")
 
 #load current scores from RDS file
 server<-shinyServer(function(input, output,session) {
@@ -128,8 +128,12 @@ options(DT.options = list(paging=FALSE))
     group_by(`Picked by`,`started`) %>%
     count()
 
-  playersStarted <- subset(playersStarted,playersStarted$started=='FALSE')[,c(1,3)]
-  playersStarted$n <- 27- playersStarted$n
+  if('FALSE' %in% playersStarted$started){
+      playersStarted <- subset(playersStarted,playersStarted$started=='FALSE')[,c(1,3)]
+      playersStarted$n <- 27 - playersStarted$n
+    } else {playersStarted <- subset(playersStarted,playersStarted$started=='TRUE')[,c(1,3)]}
+  
+  
   leagueTable<-merge(overallTable,thisWeek,by="Player")
   leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
   leagueTable <- leagueTable[,c(1,5,4,6)]
