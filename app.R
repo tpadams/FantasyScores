@@ -54,15 +54,16 @@ for(i in 1:nrow(players)){
 allplayers <- dplyr::bind_rows(scorelist)
 allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
 #SEPTEMBER PICKS - IGNORE FIRST THREE GAMEWEEKS
-allplayers <- within(allplayers, `1`[id %in% c('513','512','518','543','536')] <- '0')
-allplayers <- within(allplayers, `2`[id %in% c('513','512','518','543','536')] <- '0')
+allplayers <- within(allplayers, `1`[id %in% c('513','512','518','543','536','520')] <- '0')
+allplayers <- within(allplayers, `2`[id %in% c('513','512','518','543','536','520')] <- '0')
 allplayers <- within(allplayers, `3`[id %in% c('513','512','518','543','536')] <- '0')
 
 #TRANSFERS - replace gameweeks with those of player transferred out
-allplayers[allplayers$Name=='Sanches',11:13] <- allplayers[allplayers$Name=='Llorente',11:13] #Sanches in for Llorente
+allplayers[allplayers$Name=='Sanches',11:13] <- allplayers[allplayers$Name=='Llorente',11:13] #Sanches in for Llorente 3GW
+allplayers[allplayers$id=='520',11:16] <- allplayers[allplayers$id=='484',11:16] #Davinson Sanchez (520) in for Mendy (484) 6GW
 
-allplayers<-allplayers[!allplayers$Name %in%c('Llorente'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$Name %in%c('Llorente'),] 
+allplayers<-allplayers[!allplayers$Name %in%c('Llorente','Mendy'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$Name %in%c('Llorente','Mendy'),] 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
 
@@ -166,7 +167,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player="Hodge",In="Sanches (SWA)",Out="Llorente (TOT)",Date="07/09/2017")
+  transfersDF <- data.frame(Player=c("Hodge","Warnes"),In=c("Sanches (SWA)","Sanchez (TOT)"),Out=c("Llorente (TOT)","Mendy (MNC)"),Date=c("07/09/2017","28/09/2017"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
