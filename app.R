@@ -128,15 +128,20 @@ options(DT.options = list(paging=FALSE))
   playersStarted <- allplayers %>% #count number of players whose game this GW has started
     group_by(`Picked by`,`started`) %>%
     count()
+  
+  finalStarted <- c()
+  for(y in levels(playersStarted$`Picked by`)){
+    if('TRUE' %in% subset(playersStarted,playersStarted$`Picked by`==y)['started']){
+      finalStarted <- rbind(finalStarted,playersStarted[playersStarted$started==TRUE & playersStarted$`Picked by`==y,c(1,3)])
+    } else{
+      interim <- playersStarted[playersStarted$started==FALSE & playersStarted$`Picked by`==y ,c(1,3)]
+      interim$n <- 27 - interim$n
+      finalStarted <- rbind(finalStarted,interim)
+      }}
+    
 
-  if('FALSE' %in% playersStarted$started){
-      playersStarted <- subset(playersStarted,playersStarted$started=='FALSE')[,c(1,3)]
-      playersStarted$n <- 27 - playersStarted$n
-    } else {playersStarted <- subset(playersStarted,playersStarted$started=='TRUE')[,c(1,3)]}
-  
-  
   leagueTable<-merge(overallTable,thisWeek,by="Player")
-  leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
+  leagueTable <- merge(leagueTable,finalStarted,by.y="Picked by",by.x="Player")
   leagueTable <- leagueTable[,c(1,5,4,6)]
   names(leagueTable) <- c("Player","Total points","This GW","Teams played")
 
