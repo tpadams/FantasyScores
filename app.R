@@ -61,9 +61,10 @@ allplayers <- within(allplayers, `3`[id %in% c('513','512','518','543','536')] <
 #TRANSFERS - replace gameweeks with those of player transferred out
 allplayers[allplayers$Name=='Sanches',11:13] <- allplayers[allplayers$Name=='Llorente',11:13] #Sanches in for Llorente 3GW
 allplayers[allplayers$id=='520',11:16] <- allplayers[allplayers$id=='484',11:16] #Davinson Sanchez (520) in for Mendy (484) 6GW
+allplayers[allplayers$id=='523',11:21] <- allplayers[allplayers$id=='273',11:21] #Ibrahimovic (523) in for Lindelof (273)
 
-allplayers<-allplayers[!allplayers$Name %in%c('Llorente','Mendy'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$Name %in%c('Llorente','Mendy'),] 
+allplayers<-allplayers[!allplayers$id %in%c('371','484','273'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$id %in%c('371','484','273'),] 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
 
@@ -172,7 +173,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge","Warnes"),In=c("Sanches (SWA)","Sanchez (TOT)"),Out=c("Llorente (TOT)","Mendy (MNC)"),Date=c("07/09/2017","28/09/2017"))
+  transfersDF <- data.frame(Player=c("Hodge","Warnes","Luke"),In=c("Sanches (SWA)","Sanchez (TOT)","Ibrahimovic (MNU)"),Out=c("Llorente (TOT)","Mendy (MNC)","Lindelof (MNU)"),Date=c("07/09/2017","28/09/2017","18/11/2017"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
