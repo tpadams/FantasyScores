@@ -6,6 +6,7 @@ library(dplyr)
 library(ggplot2)
 library(DT)
 library(shinydashboard)
+library(plotly)
 #setwd("~/GitHub/FantasyScores/")
 
 #load current scores from RDS file
@@ -170,7 +171,7 @@ options(DT.options = list(paging=FALSE))
   
   output$bottomScores <- DT::renderDataTable(datatable(head(gameweekpoints[c(1,2,3)][with(gameweekpoints,order(`Points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
   
-  output$graph <-renderPlot(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +geom_point() +scale_x_continuous(breaks= c(1:38)))
+  output$graph <-renderPlotly(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +geom_point(aes(text=paste("Points:",Points))) +scale_x_continuous(breaks= c(1:38)))
   
   ########Other Stats#########
   output$notpicked <- DT::renderDataTable(datatable(head(notpicked[c(2,3,4,6)][with(notpicked,order(-`Total points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
@@ -219,7 +220,7 @@ ui<- dashboardPage(skin='green',
               dashboardBody(
                 tabItems(
                 tabItem(tabName="LeagueTable",
-                fluidRow(DT::dataTableOutput('league'),plotOutput("graph"))),
+                fluidRow(DT::dataTableOutput('league'),plotlyOutput("graph"))),
                 tabItem(tabName="PlayerScores",
                 fluidRow(selectInput("p","Player:",c("Tom","Warnes","David","Hodge","Luke"))),
                 fluidRow(DT::dataTableOutput("playerscores"))),
