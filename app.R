@@ -46,6 +46,7 @@ for(i in 1:nrow(players)){
   player_with_scores$`GW minutes` <- minsplayed
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
   started <- individual$explain$fixture$started
+  if(is.null(started)){started <- FALSE}
   player_with_scores <- cbind(player_with_scores,started)
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
@@ -164,7 +165,12 @@ options(DT.options = list(paging=FALSE))
 
   output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE))
   
-  output$graph <-renderPlot(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +scale_x_continuous(breaks= c(1:38)))
+  #need to make this work and add to UI
+  output$topScores <- DT::renderDataTable(datatable(head(gameweekpoints[c(1,2,3)][with(gameweekpoints,order(-`Points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
+  
+  output$bottomScores <- DT::renderDataTable(datatable(head(gameweekpoints[c(1,2,3)][with(gameweekpoints,order(`Points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
+  
+  output$graph <-renderPlot(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +geom_point() +scale_x_continuous(breaks= c(1:38)))
   
   ########Other Stats#########
   output$notpicked <- DT::renderDataTable(datatable(head(notpicked[c(2,3,4,6)][with(notpicked,order(-`Total points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
@@ -220,7 +226,9 @@ ui<- dashboardPage(skin='green',
                 tabItem(tabName="Stats",
                 fluidRow(box(DT::dataTableOutput('notpicked'),width=4,title="Top scoring non-picked players"),
                 box(DT::dataTableOutput('topoverall'),width=4,title="Top scoring players overall"),
-                box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game"))),
+                box(DT::dataTableOutput('ppg'),width=4,title="Top scoring points per game")),
+                fluidRow(box(DT::dataTableOutput('topScores'),width=6,title="Best GW Scores"),
+                         box(DT::dataTableOutput('bottomScores'),width=6,title="Worst GW Scores"))),
                 tabItem(tabName="PlayerFinder",
                 fluidRow(checkboxGroupInput("Columns",label = "Select columns:",
                                             choiceValues = c("GW points","News","points_per_game","minutes","goals_scored","assists",
