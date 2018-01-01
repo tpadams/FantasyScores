@@ -238,7 +238,7 @@ ui<- dashboardPage(skin='green',
                 fluidRow(DT::dataTableOutput("finder"))),
                 tabItem(tabName="Transfers",
                 fluidRow(DT::dataTableOutput("transfers")))
-              )))
+              ),tags$head(includeScript("www/google.js"))))
 
                         
 shinyApp(ui = ui, server = server)
