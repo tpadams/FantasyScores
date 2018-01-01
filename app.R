@@ -44,11 +44,14 @@ for(i in 1:nrow(players)){
   roundscores <- data.frame(roundscores[2,])
   names(roundscores) <- temp
   player_with_scores <- cbind(players[i,],roundscores)
-  player_with_scores$`GW minutes` <- minsplayed
+  player_with_scores$`GW minutes` <- sum(minsplayed)
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
-  started <- individual$explain$fixture$started
-  if(is.null(started)){started <- FALSE}
+  started <- sum(individual$explain$fixture$started)
+  if(is.null(started)){started <- FALSE} #controls for blank GWs
   player_with_scores <- cbind(player_with_scores,started)
+  #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
+  if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
+  player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
@@ -109,22 +112,23 @@ assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
 gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsDavid,gwpointsHodge,gwpointsLuke)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
 gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
-
+gameweekpoints <- gameweekpoints[!is.na(gameweekpoints$Week),]
 
 
 #Define server logic required to summarize and view the selected data
 options(DT.options = list(paging=FALSE))
   #############PLAYER SCORES##############
-  datasetInput <- reactive({
-    switch(input$p,
+  datasetInput <- reactive({a<-switch(input$p,
            "Tom" = Tom,
            "Warnes" = Warnes,
            "Hodge" = Hodge,
            "David" = David,
            "Luke" = Luke
-           )}) #get player
+           )
+  a[,!names(a)%in%c("started")]
+  }) #get player
   
-  DF <- reactive({ #this section adds the GW points only including top X as specified 
+  DF <- reactive({ #this section adds the GW points only including top X as specified
   gwpoints<- data.frame(transpose(subset(gameweekpoints,gameweekpoints$Player == input$p)[,2:3])[2,])
   names(gwpoints) <- c(transpose(subset(gameweekpoints,gameweekpoints$Player == input$p)[,2:3])[1,])
   gwpoints<- cbind(a="",b="",c="",d="",e="",f="",f1="",f2="",g="TOTAL",h="TOTAL",gwpoints)
@@ -145,22 +149,13 @@ options(DT.options = list(paging=FALSE))
   thisWeek <- subset(gameweekpoints,gameweekpoints$Week==max(gameweekpoints$Week))
   
   playersStarted <- allplayers %>% #count number of players whose game this GW has started
-    group_by(`Picked by`,`started`) %>%
-    count()
+    group_by(`Picked by`) %>%
+    summarise(sum(started))
   
-  finalStarted <- c()
-  for(y in levels(playersStarted$`Picked by`)){
-    if('TRUE' %in% subset(playersStarted,playersStarted$`Picked by`==y)['started']){
-      finalStarted <- rbind(finalStarted,playersStarted[playersStarted$started==TRUE & playersStarted$`Picked by`==y,c(1,3)])
-    } else{
-      interim <- playersStarted[playersStarted$started==FALSE & playersStarted$`Picked by`==y ,c(1,3)]
-      interim$n <- 27 - interim$n
-      finalStarted <- rbind(finalStarted,interim)
-      }}
-    
+
 
   leagueTable<-merge(overallTable,thisWeek,by="Player")
-  leagueTable <- merge(leagueTable,finalStarted,by.y="Picked by",by.x="Player")
+  leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
   leagueTable <- leagueTable[,c(1,5,4,6)]
   names(leagueTable) <- c("Player","Total points","This GW","Teams played")
 
