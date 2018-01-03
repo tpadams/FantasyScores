@@ -83,9 +83,11 @@ allplayers[allplayers$id=='77',11:30] <- allplayers[allplayers$id=='270',11:30] 
 allplayers[allplayers$id=='147',11:30] <- allplayers[allplayers$id=='87',11:30] #Bolasie (147) in for Brady (87) GW20
 allplayers[allplayers$id=='300',11:30] <- allplayers[allplayers$id=='15',11:30] #Atsu (300) in for Walcott (15) GW20
 allplayers[allplayers$id=='29',11:30] <- allplayers[allplayers$id=='536',11:30] #Begovic (29) in for Karnezis (536) GW20
+allplayers[allplayers$Name=='Llorente',22:30] <- allplayers[allplayers$id=='523',22:30] #Llorente in for Ibrahimovic (523), only replace time Ibra was in Luke's team
+allplayers[allplayers$Name=='Llorente',11:21] <- allplayers[allplayers$id=='273',11:21] #Replace time Lindelof was in Luke's team not Ibra with Llorente
 
-allplayers<-allplayers[!allplayers$id %in%c('371','484','273','271','181','244','425','317','332','25','149','512','217','427','124','270','87','15','536'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$id %in%c('371','484','273','271','181','244','425','317','332','25','149','512','217','427','124','270','87','15','536'),] 
+allplayers<-allplayers[!allplayers$id %in%c('523','484','273','271','181','244','425','317','332','25','149','512','217','427','124','270','87','15','536'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$id %in%c('523','484','273','271','181','244','425','317','332','25','149','512','217','427','124','270','87','15','536'),] 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
 
@@ -191,7 +193,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge","Warnes","Luke","Luke","Luke","David","David","David","David","Warnes","Warnes","Warnes","Warnes","Tom","Tom","Tom","Hodge","Hodge","Hodge"),In=c("Sanches (SWA)","Sanchez (TOT)","Ibrahimovic (MNU)","Xhaka (ARS)","Mata (MNU)","Otamendi (MNC)","Jones (MNU)","Shaqiri (STO)","Ward (BUR)","Rooney (EVE)","Fernandinho (MNC)","Townsend (CRY)","Hegazi (WBA)","Richarlison (WAT)","Lingard (MNU)","Mee (BUR)","Bolasie (EVE)","Atsu (NEW)","Begovic (BOU)"),Out=c("Llorente (TOT)","Mendy (MNC)","Lindelof (MNU)","Bailly (MNU)","Kachunga (HUD)","Kompany (MNC)","McAuley (WBA)","Ward-Prowse (SOT)","Pieters (STO)","Giroud (ARS)","Barkley (EVE)","Jese (STO)","Clyne (LIV)","Chadli (WBA)","Van Aanholt (CRY)","Blind (MNU)","Brady (BUR)","Walcott (ARS)","Karnezis (WAT)"),Date=c("07/09/2017","28/09/2017","18/11/2017",replicate(16,"30/12/2017")))
+  transfersDF <- data.frame(Player=c("Hodge","Warnes","Luke","Luke","Luke","David","David","David","David","Warnes","Warnes","Warnes","Warnes","Tom","Tom","Tom","Hodge","Hodge","Hodge","Luke"),In=c("Sanches (SWA)","Sanchez (TOT)","Ibrahimovic (MNU)","Xhaka (ARS)","Mata (MNU)","Otamendi (MNC)","Jones (MNU)","Shaqiri (STO)","Ward (BUR)","Rooney (EVE)","Fernandinho (MNC)","Townsend (CRY)","Hegazi (WBA)","Richarlison (WAT)","Lingard (MNU)","Mee (BUR)","Bolasie (EVE)","Atsu (NEW)","Begovic (BOU)","Llorente (TOT)"),Out=c("Llorente (TOT)","Mendy (MNC)","Lindelof (MNU)","Bailly (MNU)","Kachunga (HUD)","Kompany (MNC)","McAuley (WBA)","Ward-Prowse (SOT)","Pieters (STO)","Giroud (ARS)","Barkley (EVE)","Jese (STO)","Clyne (LIV)","Chadli (WBA)","Van Aanholt (CRY)","Blind (MNU)","Brady (BUR)","Walcott (ARS)","Karnezis (WAT)","Ibrahimovic (MNU)"),Date=c("07/09/2017","28/09/2017","18/11/2017",replicate(16,"30/12/2017"),"31/12/2017"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
