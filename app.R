@@ -51,7 +51,11 @@ for(i in 1:nrow(players)){
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
   if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
-  player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
+  if("34.1" %in% names(player_with_scores)){player_with_scores$`34` <- player_with_scores$`34`+player_with_scores$`34.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("34.1"))]}
+  if("37.1" %in% names(player_with_scores)){player_with_scores$`37` <- player_with_scores$`37`+player_with_scores$`37.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("37.1"))]}
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
@@ -113,13 +117,15 @@ gwscores<-apply(get(q)[11:ncol(get(q))],2,function(x) sum(head(sort(x, decreasin
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
 assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   group_by(q) %>%
+  mutate(names.gwscores. = as.numeric(names.gwscores.)) %>%
+  arrange(names.gwscores.) %>%
   mutate(cumsum = cumsum(gwscores)))
 }
 
 
 gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsDavid,gwpointsHodge,gwpointsLuke)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
-gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
+#gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
 gameweekpoints <- gameweekpoints[!is.na(gameweekpoints$Week),]
 
 
