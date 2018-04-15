@@ -113,19 +113,18 @@ assign("David",finaldf$David)
 assign("Hodge",finaldf$Hodge)
 assign("Luke",finaldf$Luke)
 for(q in c("Tom","Warnes","David","Hodge","Luke")){
-gwscores<-apply(get(q)[11:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #20 is scored players. 
+assign(paste0(q), get(q)[,c(1:9,11:40,10,41:ncol(get(q)))])
+gwscores<-apply(get(q)[10:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #20 is scored players. 
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
 assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   group_by(q) %>%
-  mutate(names.gwscores. = as.numeric(names.gwscores.)) %>%
-  arrange(names.gwscores.) %>%
   mutate(cumsum = cumsum(gwscores)))
 }
 
 
 gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsDavid,gwpointsHodge,gwpointsLuke)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
-#gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
+gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
 gameweekpoints <- gameweekpoints[!is.na(gameweekpoints$Week),]
 
 
@@ -145,7 +144,7 @@ options(DT.options = list(paging=FALSE))
   DF <- reactive({ #this section adds the GW points only including top X as specified
   gwpoints<- data.frame(transpose(subset(gameweekpoints,gameweekpoints$Player == input$p)[,2:3])[2,])
   names(gwpoints) <- c(transpose(subset(gameweekpoints,gameweekpoints$Player == input$p)[,2:3])[1,])
-  gwpoints<- cbind(a="",b="",c="",d="",e="",f="",f1="",f2="",g="TOTAL",h="TOTAL",gwpoints)
+  gwpoints<- cbind(a="",b="",c="",d="",e="",f="",f1="",g="TOTAL",h="TOTAL",gwpoints)
   names(gwpoints) <- names(datasetInput())
   q<- rbind(datasetInput(),gwpoints)
   q$`GW points` <- as.numeric(q$`GW points`)
