@@ -36,7 +36,6 @@ id,picked_by
 142,Luke
 151,Tom
 157,Warnes
-169,David
 162,Luke
 154,David
 393,David
@@ -86,7 +85,6 @@ id,picked_by
 300,Tom
 306,Hodge
 297,Tom
-481,Hodge
 302,Luke
 305,David
 295,David
@@ -105,20 +103,18 @@ id,picked_by
 364,Warnes
 372,Tom
 351,Hodge
-359,David
+359,Warnes
 367,Luke
 357,Hodge
 355,Warnes
 390,Warnes
 445,Luke
-395,Hodge
 417,Hodge
 402,David
 409,Luke
 400,David
 465,Hodge
 408,Warnes
-401,Luke
 453,Hodge
 437,Tom
 483,Luke
