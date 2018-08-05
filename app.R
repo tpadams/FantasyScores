@@ -78,7 +78,7 @@ assign("Hodge",finaldf$Hodge)
 assign("Luke",finaldf$Luke)
 for(q in c("Tom","Warnes","David","Hodge","Luke")){
 assign(paste0(q), get(q)[,c(1:9,11:ncol(get(q)))])
-gwscores<-apply(get(q)[11:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 20))) #20 is scored players. 
+gwscores<-apply(get(q)[10:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 14))) #20 is scored players. 
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
 assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   group_by(q) %>%
@@ -116,9 +116,9 @@ options(DT.options = list(paging=FALSE))
   q
   })
   
-  output$playerscores <- DT::renderDataTable(datatable(DF()[-c(1,9,10)],rownames=FALSE,options=list(order=list(3,'desc'),scrollX=TRUE)) %>% #-1 excludes ID columns, -9 picked by col
-    formatStyle(colnames(DF())[c(5,11:ncol(DF()))],Color = styleInterval(c(0.769),c('black','green')))) #10 is the column number of first round column
-  #change 0.769 to 0.740 after 27th player added
+  output$playerscores <- DT::renderDataTable(datatable(DF()[-c(1,9)],rownames=FALSE,options=list(order=list(3,'desc'),scrollX=TRUE)) %>% #-1 excludes ID columns, -9 picked by col
+    formatStyle(colnames(DF())[c(5,10:ncol(DF()))],Color = styleInterval(c(0.56),c('black','green')))) #10 is the column number of first round column
+  
   
   ##################LEAGUE TABLE##############
   
