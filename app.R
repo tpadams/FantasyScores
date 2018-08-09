@@ -129,12 +129,15 @@ options(DT.options = list(paging=FALSE))
     group_by(`Picked by`) %>%
     summarise(sum(started))
   
-
+  playedMins <- allplayers %>% #count number of players whose game this GW has started
+    group_by(`Picked by`) %>%
+    summarise(n=sum(`GW minutes`>0))
 
   leagueTable<-merge(overallTable,thisWeek,by="Player")
   leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
-  leagueTable <- leagueTable[,c(1,5,4,6)]
-  names(leagueTable) <- c("Player","Total points","This GW","Teams played")
+  leagueTable <- merge(leagueTable,playedMins,by.y="Picked by",by.x="Player")
+  leagueTable <- leagueTable[,c(1,5,4,6,7)]
+  names(leagueTable) <- c("Player","Total points","This GW","Teams played","Players played any mins")
 
   output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE))
   
