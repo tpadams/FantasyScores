@@ -139,7 +139,7 @@ options(DT.options = list(paging=FALSE))
   leagueTable <- leagueTable[,c(1,5,4,6,7)]
   names(leagueTable) <- c("Player","Total points","This GW","Teams played","Players played any mins")
 
-  output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE))
+  output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE,options = list(scrollX = TRUE)))
   
   #need to make this work and add to UI
   output$topScores <- DT::renderDataTable(datatable(head(gameweekpoints[c(1,2,3)][with(gameweekpoints,order(-`Points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
