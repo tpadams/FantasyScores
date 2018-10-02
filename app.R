@@ -63,6 +63,12 @@ for(i in 1:nrow(players)){
 allplayers <- dplyr::bind_rows(scorelist)
 allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
 
+allplayers[allplayers$id=='36',11:16] <- allplayers[allplayers$id=='206',11:16] #Stanislas (36) in for Pritchard (206)
+
+allplayers<-allplayers[!allplayers$id %in%c('206'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$id %in%c('206'),] 
+
+
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
 
 #e<- names(allplayers)
@@ -171,7 +177,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge"),In=c("Sanches (SWA)"),Out=c("Llorente (TOT)"),Date=c("07/09/2017"))
+  transfersDF <- data.frame(Player=c("Hodge"),In=c("Stanislas (BOU)"),Out=c("Pritchard (CAR)"),Date=c("30/09/2018"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
