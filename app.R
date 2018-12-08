@@ -64,9 +64,12 @@ allplayers <- dplyr::bind_rows(scorelist)
 allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
 
 allplayers[allplayers$id=='36',11:16] <- allplayers[allplayers$id=='206',11:16] #Stanislas (36) in for Pritchard (206)
+allplayers[allplayers$id=='433',11:25] <- allplayers[allplayers$id=='359',11:25] #Neves (433) in for Sanchez (359)
 
 allplayers<-allplayers[!allplayers$id %in%c('206'),] #now remove transferred out player from DF. 371 = Llorente
 players<-players[!players$id %in%c('206'),] 
+allplayers<-allplayers[!allplayers$id %in%c('359'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$id %in%c('359'),] 
 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
