@@ -65,11 +65,17 @@ allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
 
 allplayers[allplayers$id=='36',11:16] <- allplayers[allplayers$id=='206',11:16] #Stanislas (36) in for Pritchard (206)
 allplayers[allplayers$id=='433',11:25] <- allplayers[allplayers$id=='359',11:25] #Neves (433) in for Sanchez (359)
+allplayers[allplayers$id=='394',11:29] <- allplayers[allplayers$id=='18',11:29] #Deulofeu (394) in for Mkhi (18) gw19
+allplayers[allplayers$id=='292',11:30] <- allplayers[allplayers$id=='492',11:30] #Lindelof (292) in for Ghezzal (492) gw20
 
 allplayers<-allplayers[!allplayers$id %in%c('206'),] #now remove transferred out player from DF. 371 = Llorente
 players<-players[!players$id %in%c('206'),] 
 allplayers<-allplayers[!allplayers$id %in%c('359'),] #now remove transferred out player from DF. 371 = Llorente
 players<-players[!players$id %in%c('359'),] 
+allplayers<-allplayers[!allplayers$id %in%c('18'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$id %in%c('18'),] 
+allplayers<-allplayers[!allplayers$id %in%c('492'),] #now remove transferred out player from DF. 371 = Llorente
+players<-players[!players$id %in%c('492'),] 
 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
@@ -180,7 +186,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge"),In=c("Stanislas (BOU)"),Out=c("Pritchard (CAR)"),Date=c("30/09/2018"))
+  transfersDF <- data.frame(Player=c("Hodge","Warnes","Tom","David"),In=c("Stanislas (BOU)","Neves (WOL)","Deulofeu (WAT)","Lindelof (MNU)"),Out=c("Pritchard (CAR)","Sanchez (TOT)","Mkhitaryan (ARS)","Ghezzal (LEI)"),Date=c("30/09/2018","7/12/2018","25/12/2018","28/12/2018"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
