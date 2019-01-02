@@ -65,17 +65,45 @@ allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
 
 allplayers[allplayers$id=='36',11:16] <- allplayers[allplayers$id=='206',11:16] #Stanislas (36) in for Pritchard (206)
 allplayers[allplayers$id=='433',11:25] <- allplayers[allplayers$id=='359',11:25] #Neves (433) in for Sanchez (359)
-allplayers[allplayers$id=='394',11:29] <- allplayers[allplayers$id=='18',11:29] #Deulofeu (394) in for Mkhi (18) gw19
-allplayers[allplayers$id=='292',11:30] <- allplayers[allplayers$id=='492',11:30] #Lindelof (292) in for Ghezzal (492) gw20
+allplayers[allplayers$id=='394',11:28] <- allplayers[allplayers$id=='18',11:28] #Deulofeu (394) in for Mkhi (18) gw19
+allplayers[allplayers$id=='292',11:29] <- allplayers[allplayers$id=='492',11:29] #Lindelof (292) in for Ghezzal (492) gw20
 
-allplayers<-allplayers[!allplayers$id %in%c('206'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$id %in%c('206'),] 
-allplayers<-allplayers[!allplayers$id %in%c('359'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$id %in%c('359'),] 
-allplayers<-allplayers[!allplayers$id %in%c('18'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$id %in%c('18'),] 
-allplayers<-allplayers[!allplayers$id %in%c('492'),] #now remove transferred out player from DF. 371 = Llorente
-players<-players[!players$id %in%c('492'),] 
+##Jan snake gw21##
+allplayers[allplayers$id=='245',11:30] <- allplayers[allplayers$id=='402',11:30] #TAA (245) in for Cresswell (402)
+allplayers[allplayers$id=='301',11:30] <- allplayers[allplayers$id=='61',11:30] #Martial (301) in for Izquerdo (61) 
+allplayers[allplayers$id=='40',11:30] <- allplayers[allplayers$id=='69',11:30] #Fraser (40) in for Lowton (69) 
+allplayers[allplayers$id=='391',11:30] <- allplayers[allplayers$id=='453',11:30] #Pereyra (391) for Yarmolenko (453)
+allplayers[allplayers$id=='42',11:30] <- allplayers[allplayers$id=='476',11:30] #Brooks (42) for Jahankabash (476)
+allplayers[allplayers$id=='268',11:30] <- allplayers[allplayers$id=='199',11:30] #Laporte (268) for Mooy (199)
+allplayers[allplayers$id=='425',11:30] <- allplayers[allplayers$id=='182',11:30] #Doherty (425) for Cairney (182)
+allplayers[allplayers$id=='370',11:30] <- allplayers[allplayers$id=='107',11:30] #Moura (370) for Zohore (107)
+allplayers[allplayers$id=='126',11:30] <- allplayers[allplayers$id=='346',11:30] #Kante (126) for Elyounoussi (346)
+allplayers[allplayers$id=='145',11:30] <- allplayers[allplayers$id=='408',11:30] #Wan-Bissaka (145) for Fredericks (408)
+allplayers[allplayers$id=='484',11:30] <- allplayers[allplayers$id=='177',11:30] #Digne (484) for Tosun (177)
+allplayers[allplayers$id=='504',11:30] <- allplayers[allplayers$id=='123',11:30] #Camarasa (504) for Fabregas (123)
+allplayers[allplayers$id=='90',11:30] <- allplayers[allplayers$id=='288',11:30] #Morrison (90) for Valencia (288)
+allplayers[allplayers$id=='258',11:30] <- allplayers[allplayers$id=='487',11:30] #Ings (258) for Mawson (487)
+
+
+out<-c('206','359','18','492','402','61','69','453','476','199','182','107','346','408','177','123','288','487')
+
+notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
+
+allplayers<-allplayers[!allplayers$id %in%out,]
+
+players<-players[!players$id %in%out,]
+
+# 
+# allplayers<-allplayers[!allplayers$id %in%c('206'),] #now remove transferred out player from DF. 371 = Llorente
+# players<-players[!players$id %in%c('206'),] 
+# allplayers<-allplayers[!allplayers$id %in%c('359'),] #now remove transferred out player from DF. 371 = Llorente
+# players<-players[!players$id %in%c('359'),] 
+# allplayers<-allplayers[!allplayers$id %in%c('18'),] #now remove transferred out player from DF. 371 = Llorente
+# players<-players[!players$id %in%c('18'),] 
+# allplayers<-allplayers[!allplayers$id %in%c('492'),] #now remove transferred out player from DF. 371 = Llorente
+# players<-players[!players$id %in%c('492'),]
+# allplayers<-allplayers[!allplayers$id %in%c('402'),] #now remove transferred out player from DF. 371 = Llorente
+# players<-players[!players$id %in%c('402'),] 
 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
