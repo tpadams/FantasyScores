@@ -84,8 +84,10 @@ allplayers[allplayers$id=='504',11:30] <- allplayers[allplayers$id=='123',11:30]
 allplayers[allplayers$id=='90',11:30] <- allplayers[allplayers$id=='288',11:30] #Morrison (90) for Valencia (288)
 allplayers[allplayers$id=='258',11:30] <- allplayers[allplayers$id=='487',11:30] #Ings (258) for Mawson (487)
 
+allplayers[allplayers$id=='45',11:31] <- allplayers[allplayers$id=='458',11:31] #King (45) for Kenedy (458)
 
-out<-c('206','359','18','492','402','61','69','453','476','199','182','107','346','408','177','123','288','487')
+
+out<-c('206','359','18','492','402','61','69','453','476','199','182','107','346','408','177','123','288','487','458')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
@@ -218,7 +220,7 @@ options(DT.options = list(paging=FALSE))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
-  session$onSessionEnded(stopApp)
+  #session$onSessionEnded(stopApp)
 }) #end of shiny section
 
 
