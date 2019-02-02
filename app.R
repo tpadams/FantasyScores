@@ -85,9 +85,17 @@ allplayers[allplayers$id=='90',11:30] <- allplayers[allplayers$id=='288',11:30] 
 allplayers[allplayers$id=='258',11:30] <- allplayers[allplayers$id=='487',11:30] #Ings (258) for Mawson (487)
 
 allplayers[allplayers$id=='45',11:31] <- allplayers[allplayers$id=='458',11:31] #King (45) for Kenedy (458)
+allplayers[allplayers$id=='242',11:33] <- allplayers[allplayers$id=='4',11:33] #Gomez (242) for Bellerin (4)
+allplayers[allplayers$id=='143',11:33] <- allplayers[allplayers$id=='332',11:33] #Sakho (143) for Cedric (332)
+allplayers[allplayers$id=='88',11:34] <- allplayers[allplayers$id=='191',11:34] #Etheridge (88) for Lossl (191)
+allplayers[allplayers$id=='579',11:34] <- allplayers[allplayers$id=='329',11:34] #Higuain (579) for Forster (329)
+allplayers[allplayers$id=='587',11:34] <- allplayers[allplayers$id=='59',11:34] #Almiron (587) for Gross (59)
+allplayers[allplayers$id=='586',11:34] <- allplayers[allplayers$id=='5',11:34] # Suarez (586) for Monreal (5)
+allplayers[allplayers$id=='592',11:34] <- allplayers[allplayers$id=='134',11:34] # Batshuayi (592) for Morata (134)
+allplayers[allplayers$id=='67',11:34] <- allplayers[allplayers$id=='249',11:34] # Heaton (67) for Henderson (249)
 
 
-out<-c('206','359','18','492','402','61','69','453','476','199','182','107','346','408','177','123','288','487','458')
+out<-c('206','359','18','492','402','61','69','453','476','199','182','107','346','408','177','123','288','487','458','4','332','191','329','59','5','134','249')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
