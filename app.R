@@ -50,8 +50,8 @@ for(i in 1:nrow(players)){
   if(is.null(started)){started <- FALSE} #controls for blank GWs
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
-  if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
+  if("25.1" %in% names(player_with_scores)){player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("25.1"))]}
   if("34.1" %in% names(player_with_scores)){player_with_scores$`34` <- player_with_scores$`34`+player_with_scores$`34.1` 
   player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("34.1"))]}
   if("37.1" %in% names(player_with_scores)){player_with_scores$`37` <- player_with_scores$`37`+player_with_scores$`37.1` 
