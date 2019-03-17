@@ -48,11 +48,10 @@ for(i in 1:nrow(players)){
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
   started <- sum(individual$explain$fixture$started)
   if(is.null(started)){started <- FALSE} #controls for blank GWs
-  if(!"31" %in% names(player_with_scores)){player_with_scores$`31`<-0} #blank gw
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
-  if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
+  if("25.1" %in% names(player_with_scores)){player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("25.1"))]}
   if("32.1" %in% names(player_with_scores)){player_with_scores$`32` <- player_with_scores$`32`+player_with_scores$`32.1` 
   player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("32.1"))]}
   if("35.1" %in% names(player_with_scores)){player_with_scores$`35` <- player_with_scores$`35`+player_with_scores$`35.1` 
@@ -62,7 +61,7 @@ for(i in 1:nrow(players)){
 }})
 
 allplayers <- dplyr::bind_rows(scorelist)
-allplayers <- allplayers[,c(1:9,ncol(allplayers),(10:(ncol(allplayers)-1)))]
+allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T))))]
 
 allplayers[allplayers$id=='36',11:16] <- allplayers[allplayers$id=='206',11:16] #Stanislas (36) in for Pritchard (206)
 allplayers[allplayers$id=='433',11:25] <- allplayers[allplayers$id=='359',11:25] #Neves (433) in for Sanchez (359)
