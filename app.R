@@ -48,14 +48,15 @@ for(i in 1:nrow(players)){
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
   started <- sum(individual$explain$fixture$started)
   if(is.null(started)){started <- FALSE} #controls for blank GWs
+  if(!"31" %in% names(player_with_scores)){player_with_scores$`31`<-0} #blank gw
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
-  if("25.1" %in% names(player_with_scores)){player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("25.1"))]}
-  if("34.1" %in% names(player_with_scores)){player_with_scores$`34` <- player_with_scores$`34`+player_with_scores$`34.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("34.1"))]}
-  if("37.1" %in% names(player_with_scores)){player_with_scores$`37` <- player_with_scores$`37`+player_with_scores$`37.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("37.1"))]}
+  if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
+  if("32.1" %in% names(player_with_scores)){player_with_scores$`32` <- player_with_scores$`32`+player_with_scores$`32.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("32.1"))]}
+  if("35.1" %in% names(player_with_scores)){player_with_scores$`35` <- player_with_scores$`35`+player_with_scores$`35.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("35.1"))]}
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
