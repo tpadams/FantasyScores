@@ -12,7 +12,7 @@ library(plotly)
 #load current scores from RDS file
 server<-shinyServer(function(input, output,session) {
 scorelist <- list()
-ffdata <- fromJSON('https://fantasy.premierleague.com/api/bootstrap-static')
+ffdata <- fromJSON('http://fantasy.premierleague.com/api/bootstrap-static/')
 
 players_noteam <- ffdata$elements[,c("id","web_name","element_type","team_code","event_points","total_points","news","points_per_game")]
 teams <- ffdata$teams[,c("name","code")]
@@ -34,9 +34,10 @@ colnames(players) <- c("id","Name","Position","Team","GW points","Total points",
 names(ppg) <- c("Name","Position","Team","PPG")
 ppg$PPG <- as.numeric(ppg$PPG)
 
+currentGW <- match(TRUE,ffdata$events$is_current)
 withProgress(message = 'Loading...', value = 0,{
 for(i in 1:nrow(players)){
-  individual <- fromJSON(paste0("https://fantasy.premierleague.com/api/element-summary/",players[i,]$id))
+  individual <- fromJSON(paste0("http://fantasy.premierleague.com/api/element-summary/",players[i,]$id,"/"))
   tryCatch({roundscores <- transpose(individual$history[,c("round","total_points")])},error=function(e){roundscores <<- as.data.frame(matrix(c(1,2,3,0,0,0), nrow=2, ncol=3,byrow=TRUE))})
   tryCatch({minsplayed <- individual$history[individual$history$round==max(individual$history$round),][,c("minutes")]},error=function(e){minsplayed<<-0},warning=function(w){minsplayed<<-0})
   names(roundscores) <- c(roundscores[1,])
@@ -46,24 +47,45 @@ for(i in 1:nrow(players)){
   player_with_scores <- cbind(players[i,],roundscores)
   player_with_scores$`GW minutes` <- sum(minsplayed)
   player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
-  started <- sum(individual$explain$fixture$started)
+  started <- ifelse(currentGW==min(individual$fixtures$event,na.rm=T),0,1)
   if(is.null(started)){started <- FALSE} #controls for blank GWs
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
+  if("21.1" %in% names(player_with_scores)){player_with_scores$`21` <- player_with_scores$`21`+player_with_scores$`21.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("21.1"))]}
+  if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
+  if("23.1" %in% names(player_with_scores)){player_with_scores$`23` <- player_with_scores$`23`+player_with_scores$`23.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("23.1"))]}
   if("25.1" %in% names(player_with_scores)){player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1` 
   player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("25.1"))]}
-  if("32.1" %in% names(player_with_scores)){player_with_scores$`32` <- player_with_scores$`32`+player_with_scores$`32.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("32.1"))]}
-  if("35.1" %in% names(player_with_scores)){player_with_scores$`35` <- player_with_scores$`35`+player_with_scores$`35.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("35.1"))]}
+  if("26.1" %in% names(player_with_scores)){player_with_scores$`26` <- player_with_scores$`26`+player_with_scores$`26.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("26.1"))]}
+  if("28.1" %in% names(player_with_scores)){player_with_scores$`28` <- player_with_scores$`28`+player_with_scores$`28.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("28.1"))]}
+  if("29.1" %in% names(player_with_scores)){player_with_scores$`29` <- player_with_scores$`29`+player_with_scores$`29.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("29.1"))]}
+  if("31.1" %in% names(player_with_scores)){player_with_scores$`31` <- player_with_scores$`31`+player_with_scores$`31.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("31.1"))]}
+  if("33.1" %in% names(player_with_scores)){player_with_scores$`33` <- player_with_scores$`33`+player_with_scores$`33.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("33.1"))]}
+  if("34.1" %in% names(player_with_scores)){player_with_scores$`34` <- player_with_scores$`34`+player_with_scores$`34.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("34.1"))]}
+  if("36.1" %in% names(player_with_scores)){player_with_scores$`36` <- player_with_scores$`36`+player_with_scores$`36.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("36.1"))]}
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
 
 allplayers <- dplyr::bind_rows(scorelist)
-allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T))))]
+gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
+#rem <- as.character(seq(30,38))
+#gws <- gws[! gws %in% rem]
+allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
-#allplayers[allplayers$id=='36',11:16] <- allplayers[allplayers$id=='206',11:16] #Stanislas (36) in for Pritchard (206)
+##########################IN########################################OUT################################
+#allplayers[allplayers$id=='474',11:13] <- allplayers[allplayers$id=='193',11:13] #Hernandez (193) out for Neto 474
+
 
 out<-c()
 
@@ -73,18 +95,11 @@ allplayers<-allplayers[!allplayers$id %in%out,]
 
 players<-players[!players$id %in%out,]
 
-# 
-# allplayers<-allplayers[!allplayers$id %in%c('206'),] #now remove transferred out player from DF. 371 = Llorente
-# players<-players[!players$id %in%c('206'),] 
-# allplayers<-allplayers[!allplayers$id %in%c('359'),] #now remove transferred out player from DF. 371 = Llorente
-# players<-players[!players$id %in%c('359'),] 
-# allplayers<-allplayers[!allplayers$id %in%c('18'),] #now remove transferred out player from DF. 371 = Llorente
-# players<-players[!players$id %in%c('18'),] 
-# allplayers<-allplayers[!allplayers$id %in%c('492'),] #now remove transferred out player from DF. 371 = Llorente
-# players<-players[!players$id %in%c('492'),]
-# allplayers<-allplayers[!allplayers$id %in%c('402'),] #now remove transferred out player from DF. 371 = Llorente
-# players<-players[!players$id %in%c('402'),] 
+tOut<-out
 
+allplayers<-allplayers[!allplayers$id %in% tOut,] #now remove transferred out player from DF. 
+players<-players[!players$id %in% tOut,] 
+ 
 
 allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.numeric) #convert columns to numeric
 
@@ -93,26 +108,26 @@ allplayers[11:ncol(allplayers)] <- sapply(allplayers[11:ncol(allplayers)],as.num
 #allplayers <- allplayers[,e] #put in right order after bind_rows puts NA values at end
 finaldf <- split(allplayers,allplayers$`Picked by`)
 
+
 gameweekpoints <- data.frame(Player=character(),Week=character(),Points=integer())
 assign("Tom",finaldf$Tom)
 assign("Warnes",finaldf$Warnes)
-assign("David",finaldf$David)
 assign("Hodge",finaldf$Hodge)
 assign("Luke",finaldf$Luke)
-for(q in c("Tom","Warnes","David","Hodge","Luke")){
+for(q in c("Tom","Warnes","Hodge","Luke")){
 assign(paste0(q), get(q)[,c(1:9,11:ncol(get(q)))])
-gwscores<-apply(get(q)[10:ncol(get(q))],2,function(x) sum(head(sort(x, decreasing=TRUE), 14))) #20 is scored players. 
+gwscores<-sapply(get(q)[10:ncol(get(q))],function(x) sum(head(sort(x, decreasing=TRUE), 11))) #11 is scored players.
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
 assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   group_by(q) %>%
   mutate(cumsum = cumsum(gwscores)))
 }
 
-
-gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsDavid,gwpointsHodge,gwpointsLuke)
+gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsHodge,gwpointsLuke)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
-gameweekpoints$Week <- as.double(levels(gameweekpoints$Week))[gameweekpoints$Week] #convert weeknumber from Factor to Numeric
+gameweekpoints$Week <- rep(c(1:max(as.numeric(gameweekpoints$Week))),4)
 gameweekpoints <- gameweekpoints[!is.na(gameweekpoints$Week),]
+gameweekpoints <- arrange(gameweekpoints,Player,Week)
 
 
 #Define server logic required to summarize and view the selected data
@@ -122,7 +137,6 @@ options(DT.options = list(paging=FALSE))
            "Tom" = Tom,
            "Warnes" = Warnes,
            "Hodge" = Hodge,
-           "David" = David,
            "Luke" = Luke
            )
   a[,!names(a)%in%c("started")]
@@ -148,19 +162,19 @@ options(DT.options = list(paging=FALSE))
   overallTable <- aggregate(. ~ Player, data=gameweekpoints[,c(1,3)], sum)
   thisWeek <- subset(gameweekpoints,gameweekpoints$Week==max(gameweekpoints$Week))
   
-  playersStarted <- allplayers %>% #count number of players whose game this GW has started
+  startedTeams <- allplayers %>% #count number of players whose game this GW has started
     group_by(`Picked by`) %>%
-    summarise(sum(started))
-  
+    summarise(n=sum(started,na.rm = T))
+
   playedMins <- allplayers %>% #count number of players whose game this GW has started
     group_by(`Picked by`) %>%
     summarise(n=sum(`GW minutes`>0))
 
   leagueTable<-merge(overallTable,thisWeek,by="Player")
-  leagueTable <- merge(leagueTable,playersStarted,by.y="Picked by",by.x="Player")
   leagueTable <- merge(leagueTable,playedMins,by.y="Picked by",by.x="Player")
-  leagueTable <- leagueTable[,c(1,5,4,6,7)]
-  names(leagueTable) <- c("Player","Total points","This GW","Teams played","Players played any mins")
+  leagueTable <- merge(leagueTable,startedTeams,by.y="Picked by",by.x="Player")
+  leagueTable <- leagueTable[,c(1,5,4,7,6)]
+  names(leagueTable) <- c("Player","Total points","This GW","Teams started","Players played any mins")
 
   output$league <- DT::renderDataTable(datatable(leagueTable[with(leagueTable,order(-`Total points`)),],rownames=FALSE,options = list(scrollX = TRUE)))
   
@@ -169,6 +183,7 @@ options(DT.options = list(paging=FALSE))
   
   output$bottomScores <- DT::renderDataTable(datatable(head(gameweekpoints[c(1,2,3)][with(gameweekpoints,order(`Points`)),],10),rownames=FALSE,options=list(dom='t',autoWidth = TRUE)))
   
+  #gameweekpoints[gameweekpoints$Week>29,]$Week <- gameweekpoints[gameweekpoints$Week>29,]$Week -9
   output$graph <-renderPlotly(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +geom_point(aes(text=paste("Points:",Points))) +scale_x_continuous(breaks= c(1:38)))
   
   ########Other Stats#########
@@ -194,7 +209,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c(),In=c(),Out=c(),Date=c())
+  transfersDF <- data.frame(Player=c(""),In=c(""),Out=c(""),Date=c(""))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
@@ -220,7 +235,7 @@ ui<- dashboardPage(skin='green',
                 tabItem(tabName="LeagueTable",
                 fluidRow(DT::dataTableOutput('league'),plotlyOutput("graph"))),
                 tabItem(tabName="PlayerScores",
-                fluidRow(selectInput("p","Player:",c("Tom","Warnes","David","Hodge","Luke"))),
+                fluidRow(selectInput("p","Player:",c("Tom","Warnes","Hodge","Luke"))),
                 fluidRow(DT::dataTableOutput("playerscores"))),
                 tabItem(tabName="Stats",
                 fluidRow(box(DT::dataTableOutput('notpicked'),width=4,title="Top scoring non-picked players"),
