@@ -213,6 +213,12 @@ options(DT.options = list(paging=FALSE))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
+  ###Keep Alive###
+  output$keep_alive <- renderText({
+    req(input$alive_count)
+    input$alive_count
+  })
+  
   #session$onSessionEnded(stopApp)
 }) #end of shiny section
 
@@ -233,7 +239,7 @@ ui<- dashboardPage(skin='green',
               dashboardBody(
                 tabItems(
                 tabItem(tabName="LeagueTable",
-                fluidRow(DT::dataTableOutput('league'),plotlyOutput("graph"))),
+                fluidRow(DT::dataTableOutput('league'),plotlyOutput("graph")),fluidRow(textOutput("keep_alive"))),
                 tabItem(tabName="PlayerScores",
                 fluidRow(selectInput("p","Player:",c("Tom","Warnes","Hodge","Luke"))),
                 fluidRow(DT::dataTableOutput("playerscores"))),
@@ -256,7 +262,20 @@ ui<- dashboardPage(skin='green',
                 fluidRow(DT::dataTableOutput("finder"))),
                 tabItem(tabName="Transfers",
                 fluidRow(DT::dataTableOutput("transfers")))
-              ),tags$head(includeScript("www/google.js"))))
+              ),tags$head(includeScript("www/google.js")),tags$head(tags$script("var socket_timeout_interval;
+var n = 0;
+
+$(document).on('shiny:connected', function(event) {
+  socket_timeout_interval = setInterval(function() {
+    Shiny.onInputChange('alive_count', n++)
+  }, 100);
+});
+
+$(document).on('shiny:disconnected', function(event) {
+  clearInterval(socket_timeout_interval)
+});")),tags$head(tags$style(HTML("#keep_alive {
+  visibility: hidden;
+}")))))
 
                         
 shinyApp(ui = ui, server = server)
