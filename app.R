@@ -84,10 +84,10 @@ gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
-#allplayers[allplayers$id=='474',11:13] <- allplayers[allplayers$id=='193',11:13] #Hernandez (193) out for Neto 474
+allplayers[allplayers$id=='113',11:13] <- allplayers[allplayers$id=='50',11:13] #Carlos 50 out for Sanchez 113 Before GW4
 
 
-out<-c()
+out<-c('50')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
@@ -209,7 +209,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c(""),In=c(""),Out=c(""),Date=c(""))
+  transfersDF <- data.frame(Player=c("Hodge"),In=c("Sanchez"),Out=c("Diego Carlos"),BeforeGameweek=c("4"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
