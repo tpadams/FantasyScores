@@ -85,9 +85,20 @@ allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minute
 
 ##########################IN########################################OUT################################
 allplayers[allplayers$id=='113',11:13] <- allplayers[allplayers$id=='50',11:13] #Carlos 50 out for Sanchez 113 Before GW4
+allplayers[allplayers$id=='609',11:15] <- allplayers[allplayers$id=='290',11:15] #Konate 290 out for Antony 609 before GW6
+allplayers[allplayers$id=='594',11:15] <- allplayers[allplayers$id=='8',11:15] #Tierney 8 out for Isak 594 before GW6
+allplayers[allplayers$id=='617',11:15] <- allplayers[allplayers$id=='191',11:15] #Calvert-Lewin 191 out for Auba 617
+allplayers[allplayers$id=='603',11:15] <- allplayers[allplayers$id=='12',11:15] #Smith-Rowe 12 out for Paqueta 603
+allplayers[allplayers$id=='342',11:15] <- allplayers[allplayers$id=='114',11:15] #Lamptey 114 out for Dalot 342
+allplayers[allplayers$id=='169',11:15] <- allplayers[allplayers$id=='37',11:15] #McGinn 37 out for Eze 169 before GW6
 
 
-out<-c('50')
+
+
+
+
+
+out<-c('50','290','8','191','12','114','37')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
@@ -209,7 +220,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge"),In=c("Sanchez"),Out=c("Diego Carlos"),BeforeGameweek=c("4"))
+  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn"),BeforeGameweek=c("4","6","6","6","6","6","6"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
