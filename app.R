@@ -80,7 +80,7 @@ for(i in 1:nrow(players)){
 allplayers <- dplyr::bind_rows(scorelist)
 gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
 #rem <- as.character(seq(30,38))
-#gws <- gws[! gws %in% rem]
+gws <- gws[! gws %in% c(7)]
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
@@ -136,7 +136,8 @@ assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
 
 gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsHodge,gwpointsLuke)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
-gameweekpoints$Week <- rep(c(1:max(as.numeric(gameweekpoints$Week))),4)
+gws
+gameweekpoints$Week <- rep(as.numeric(gws),4)
 gameweekpoints <- gameweekpoints[!is.na(gameweekpoints$Week),]
 gameweekpoints <- arrange(gameweekpoints,Player,Week)
 
