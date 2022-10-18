@@ -91,14 +91,17 @@ allplayers[allplayers$id=='617',11:15] <- allplayers[allplayers$id=='191',11:15]
 allplayers[allplayers$id=='603',11:15] <- allplayers[allplayers$id=='12',11:15] #Smith-Rowe 12 out for Paqueta 603
 allplayers[allplayers$id=='342',11:15] <- allplayers[allplayers$id=='114',11:15] #Lamptey 114 out for Dalot 342
 allplayers[allplayers$id=='169',11:15] <- allplayers[allplayers$id=='37',11:15] #McGinn 37 out for Eze 169 before GW6
+allplayers[allplayers$id=='169',11:15] <- allplayers[allplayers$id=='37',11:15] #McGinn 37 out for Eze 169 before GW6
+allplayers[allplayers$id=='346',11:19] <- allplayers[allplayers$id=='486',11:19] #Neto 486 out for Pereira 346 before GW11 H
+allplayers[allplayers$id=='26',11:19] <- allplayers[allplayers$id=='464',11:19] #Benrahma 464 out for Saliba 26 before GW11 W
+allplayers[allplayers$id=='104',11:19] <- allplayers[allplayers$id=='527',11:19] #Lingard 527 out for Gross 104 before GW11 T
+allplayers[allplayers$id=='589',11:19] <- allplayers[allplayers$id=='272',11:19] #Fofana 272 out for Nunes 589 before GW11 W
+allplayers[allplayers$id=='433',11:19] <- allplayers[allplayers$id=='135',11:19] #Ziyech 135 out for Hojberg 433 before GW11 L
 
 
 
 
-
-
-
-out<-c('50','290','8','191','12','114','37')
+out<-c('50','290','8','191','12','114','37','486','464','527','272','135')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
@@ -221,7 +224,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn"),BeforeGameweek=c("4","6","6","6","6","6","6"))
+  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes","Warnes","Tom","Warnes","Luke","Hodge"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze","Saliba","Gross","Nunes","Hojberg","Pereira"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn","Benrahma","Lingard","Fofana","Ziyech","Neto"),BeforeGameweek=c("4","6","6","6","6","6","6","11","11","11","11","11"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
