@@ -98,11 +98,14 @@ allplayers[allplayers$id=='104',11:19] <- allplayers[allplayers$id=='527',11:19]
 allplayers[allplayers$id=='589',11:19] <- allplayers[allplayers$id=='272',11:19] #Fofana 272 out for Nunes 589 before GW11 W
 allplayers[allplayers$id=='433',11:19] <- allplayers[allplayers$id=='135',11:19] #Ziyech 135 out for Hojberg 433 before GW11 L
 allplayers[allplayers$id=='369',11:25] <- allplayers[allplayers$id=='326',11:25] #Ronaldo 326 out for Almiron 369 before gw17 LP
+allplayers[allplayers$id=='366',11:25] <- allplayers[allplayers$id=='78',11:25] #Jansson 78 out for Schar 366 before gw17 TA
+allplayers[allplayers$id=='319',11:25] <- allplayers[allplayers$id=='227',11:25] #Bamford 227 out for Alvarez 319 before gw17 H
 
 
 
 
-out<-c('50','290','8','191','12','114','37','486','464','527','272','135','326')
+
+out<-c('50','290','8','191','12','114','37','486','464','527','272','135','326','78','227')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
@@ -225,7 +228,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes","Warnes","Tom","Warnes","Luke","Hodge","Luke"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze","Saliba","Gross","Nunes","Hojberg","Pereira","Almiron"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn","Benrahma","Lingard","Fofana","Ziyech","Neto","Ronaldo"),BeforeGameweek=c("4","6","6","6","6","6","6","11","11","11","11","11","17"))
+  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes","Warnes","Tom","Warnes","Luke","Hodge","Luke","Tom","Hodge"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze","Saliba","Gross","Nunes","Hojberg","Pereira","Almiron","Schar","Alvarez"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn","Benrahma","Lingard","Fofana","Ziyech","Neto","Ronaldo","Jansson","Bamford"),BeforeGameweek=c("4","6","6","6","6","6","6","11","11","11","11","11","17","17"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
