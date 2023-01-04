@@ -228,7 +228,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes","Warnes","Tom","Warnes","Luke","Hodge","Luke","Tom","Hodge"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze","Saliba","Gross","Nunes","Hojberg","Pereira","Almiron","Schar","Alvarez"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn","Benrahma","Lingard","Fofana","Ziyech","Neto","Ronaldo","Jansson","Bamford"),BeforeGameweek=c("4","6","6","6","6","6","6","11","11","11","11","11","17","17"))
+  transfersDF <- data.frame(Player=c("Hodge","Hodge","Luke","Warnes","Tom","Tom","Warnes","Warnes","Tom","Warnes","Luke","Hodge","Luke","Tom","Hodge"),In=c("Sanchez","Antony","Isak","Aubameyang","Paqueta","Dalot","Eze","Saliba","Gross","Nunes","Hojberg","Pereira","Almiron","Schar","Alvarez"),Out=c("Diego Carlos","Konate","Tierney","Calvert-Lewin","Smith-Rowe","Lamptey","McGinn","Benrahma","Lingard","Fofana","Ziyech","Neto","Ronaldo","Jansson","Bamford"),BeforeGameweek=c("4","6","6","6","6","6","6","11","11","11","11","11","17","17","17"))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
