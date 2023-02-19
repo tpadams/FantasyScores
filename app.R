@@ -108,11 +108,13 @@ allplayers[allplayers$id=='11',11:31] <- allplayers[allplayers$id=='617',11:31] 
 allplayers[allplayers$id=='689',11:31] <- allplayers[allplayers$id=='367',11:31] #Targett 367 out for Badiashille 689 T
 allplayers[allplayers$id=='95',11:31] <- allplayers[allplayers$id=='476',11:31] #Jiminez 476 OUT for 96 Mbeumo 95 L
 allplayers[allplayers$id=='733',11:31] <- allplayers[allplayers$id=='66',11:31] #sOLANKE 66 out for Porro 733 H
+allplayers[allplayers$id=='377',11:30] <- allplayers[allplayers$id=='306',11:30] #Cancelo 306 out for Botman 377 before gw22 W
 
 
 
 
-out<-c('50','290','8','191','12','114','37','486','464','527','272','135','326','78','227','43','529','519','147','617','367','476','66')
+out<-c('50','290','8','191','12','114','37','486','464','527','272','135','326','78','227','43','529','519','147','617','367','476','66','306')
+
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
