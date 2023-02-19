@@ -100,12 +100,19 @@ allplayers[allplayers$id=='433',11:19] <- allplayers[allplayers$id=='135',11:19]
 allplayers[allplayers$id=='369',11:25] <- allplayers[allplayers$id=='326',11:25] #Ronaldo 326 out for Almiron 369 before gw17 LP
 allplayers[allplayers$id=='366',11:25] <- allplayers[allplayers$id=='78',11:25] #Jansson 78 out for Schar 366 before gw17 TA
 allplayers[allplayers$id=='319',11:25] <- allplayers[allplayers$id=='227',11:25] #Bamford 227 out for Alvarez 319 before gw17 H
+allplayers[allplayers$id=='699',11:31] <- allplayers[allplayers$id=='43',11:31] #Cash 43 out for Mudryk 699 before gw23 LP
+allplayers[allplayers$id=='690',11:31] <- allplayers[allplayers$id=='529',11:31] #Scamacca 529 OUT for Felix 690 before gw23 H
+allplayers[allplayers$id=='124',11:31] <- allplayers[allplayers$id=='519',11:31] #Eriksen 519 out for Mitoma 124 W
+allplayers[allplayers$id=='680',11:31] <- allplayers[allplayers$id=='147',11:31] #Mendy 147 OUT for Gakpo 680 T
+allplayers[allplayers$id=='11',11:31] <- allplayers[allplayers$id=='617',11:31] #Auba 617 OUT for Nketiah 11 w
+allplayers[allplayers$id=='689',11:31] <- allplayers[allplayers$id=='367',11:31] #Targett 367 out for Badiashille 689 T
+allplayers[allplayers$id=='95',11:31] <- allplayers[allplayers$id=='476',11:31] #Jiminez 476 OUT for 96 Mbeumo 95 L
+allplayers[allplayers$id=='733',11:31] <- allplayers[allplayers$id=='66',11:31] #sOLANKE 66 out for Porro 733 H
 
 
 
 
-
-out<-c('50','290','8','191','12','114','37','486','464','527','272','135','326','78','227')
+out<-c('50','290','8','191','12','114','37','486','464','527','272','135','326','78','227','43','529','519','147','617','367','476','66')
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
 
