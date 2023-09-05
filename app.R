@@ -84,11 +84,14 @@ gws <- gws[! gws %in% c(7)]
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
-#allplayers[allplayers$id=='113',11:13] <- allplayers[allplayers$id=='50',11:13] #Carlos 50 out for Sanchez 113 Before GW4
+allplayers[allplayers$id=='369',11:13] <- allplayers[allplayers$id=='398',11:13] #Walker 369 in for Shaw 398 pre GW4 LP
+allplayers[allplayers$id=='275',11:12] <- allplayers[allplayers$id=='278',11:12] #Leno 275 in for Mitrovic 278 pre gw3 LP
+allplayers[allplayers$id=='429',11:11] <- allplayers[allplayers$id=='349',11:11] #Tonali 429 in for De Bruyne 349 Warnes
+allplayers[allplayers$id=='199',11:11] <- allplayers[allplayers$id=='500',11:11] #Enzo 199 in for Kane 500 Hodge
 
 
 
-out<-c()
+out<-c('398','278','349','500')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
