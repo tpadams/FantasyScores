@@ -86,8 +86,8 @@ allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minute
 ##########################IN########################################OUT################################
 allplayers[allplayers$id=='369',11:13] <- allplayers[allplayers$id=='398',11:13] #Walker 369 in for Shaw 398 pre GW4 LP
 allplayers[allplayers$id=='275',11:12] <- allplayers[allplayers$id=='278',11:12] #Leno 275 in for Mitrovic 278 pre gw3 LP
-allplayers[allplayers$id=='429',11:11] <- allplayers[allplayers$id=='349',11:11] #Tonali 429 in for De Bruyne 349 Warnes
-allplayers[allplayers$id=='199',11:11] <- allplayers[allplayers$id=='500',11:11] #Enzo 199 in for Kane 500 Hodge
+allplayers[allplayers$id=='429',11:11] <- allplayers[allplayers$id=='349',11:11] #Tonali 429 in for De Bruyne 349 Warnes pre gw2
+allplayers[allplayers$id=='199',11:11] <- allplayers[allplayers$id=='500',11:11] #Enzo 199 in for Kane 500 Hodge pre gw2
 
 
 
@@ -215,7 +215,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c(),In=c(),BeforeGameweek=c())
+  transfersDF <- data.frame(Player=c('Warnes','Hodge','Luke','Luke'),In=c('Tonali','Enzo','Leno','Walker'),Out=c('De Bruyne','Kane','Mitrovic','Shaw'),BeforeGameweek=c('2','2','3','4'))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
