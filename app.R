@@ -88,10 +88,15 @@ allplayers[allplayers$id=='369',11:13] <- allplayers[allplayers$id=='398',11:13]
 allplayers[allplayers$id=='275',11:12] <- allplayers[allplayers$id=='278',11:12] #Leno 275 in for Mitrovic 278 pre gw3 LP
 allplayers[allplayers$id=='429',11:11] <- allplayers[allplayers$id=='349',11:11] #Tonali 429 in for De Bruyne 349 Warnes pre gw2
 allplayers[allplayers$id=='199',11:11] <- allplayers[allplayers$id=='500',11:11] #Enzo 199 in for Kane 500 Hodge pre gw2
+allplayers[allplayers$id=='664',11:14] <- allplayers[allplayers$id=='387',11:14] #JWP 664 in for Maguire 387 Hodge pre gw5
+allplayers[allplayers$id=='365',11:14] <- allplayers[allplayers$id=='397',11:14] #Rodri 365 in for Sancho 397 Warnes
+allplayers[allplayers$id=='519',11:14] <- allplayers[allplayers$id=='51',11:14] #Udogie 519 in for Mings 51
+allplayers[allplayers$id=='412',11:14] <- allplayers[allplayers$id=='372',11:14] #Gordon 412 in for Anthony 372
+allplayers[allplayers$id=='36',11:14] <- allplayers[allplayers$id=='525',11:14] #Benrahma 525 out for Cash 36
 
 
 
-out<-c('398','278','349','500')
+out<-c('398','278','349','500','387','397','51','372','36')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
@@ -215,7 +220,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c('Warnes','Hodge','Luke','Luke'),In=c('Tonali','Enzo','Leno','Walker'),Out=c('De Bruyne','Kane','Mitrovic','Shaw'),BeforeGameweek=c('2','2','3','4'))
+  transfersDF <- data.frame(Player=c('Warnes','Hodge','Luke','Luke','Warnes','Hodge','Tom','Tom','Hodge'),In=c('Tonali','Enzo','Leno','Walker','Rodri','Ward-Prowse','Udogie','Gordon','Cash'),Out=c('De Bruyne','Kane','Mitrovic','Shaw','Sancho','Maguire','Mings','Anthony','Benrahma'),BeforeGameweek=c('2','2','3','4','5','5','5','5','5'))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
