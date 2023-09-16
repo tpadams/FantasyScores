@@ -96,7 +96,7 @@ allplayers[allplayers$id=='36',11:14] <- allplayers[allplayers$id=='525',11:14] 
 
 
 
-out<-c('398','278','349','500','387','397','51','372','36')
+out<-c('398','278','349','500','387','397','51','372','525')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
