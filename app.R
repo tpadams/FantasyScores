@@ -51,8 +51,8 @@ for(i in 1:nrow(players)){
   if(is.null(started)){started <- FALSE} #controls for blank GWs
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
-  if("21.1" %in% names(player_with_scores)){player_with_scores$`21` <- player_with_scores$`21`+player_with_scores$`21.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("21.1"))]}
+  if("7.1" %in% names(player_with_scores)){player_with_scores$`7` <- player_with_scores$`7`+player_with_scores$`7.1` 
+  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("7.1"))]}
   if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
   player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
   if("23.1" %in% names(player_with_scores)){player_with_scores$`23` <- player_with_scores$`23`+player_with_scores$`23.1` 
@@ -80,7 +80,7 @@ for(i in 1:nrow(players)){
 allplayers <- dplyr::bind_rows(scorelist)
 gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
 #rem <- as.character(seq(30,38))
-gws <- gws[! gws %in% c(7)]
+#gws <- gws[! gws %in% c(7)]
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
