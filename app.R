@@ -93,10 +93,14 @@ allplayers[allplayers$id=='365',11:14] <- allplayers[allplayers$id=='397',11:14]
 allplayers[allplayers$id=='519',11:14] <- allplayers[allplayers$id=='51',11:14] #Udogie 519 in for Mings 51
 allplayers[allplayers$id=='412',11:14] <- allplayers[allplayers$id=='372',11:14] #Gordon 412 in for Anthony 372
 allplayers[allplayers$id=='36',11:14] <- allplayers[allplayers$id=='525',11:14] #Benrahma 525 out for Cash 36
+allplayers[allplayers$id=='398',11:22] <- allplayers[allplayers$id=='369',11:22] #Shaw 369 out for Shaw 398
+allplayers[allplayers$id=='678',11:22] <- allplayers[allplayers$id=='209',11:22] #Mason 209 out for Doku 678
+allplayers[allplayers$id=='362',11:22] <- allplayers[allplayers$id=='55',11:22] #Ramsey 55 out for Palmer 362
+allplayers[allplayers$id=='557',11:22] <- allplayers[allplayers$id=='78',11:22] #Dango 78 out for Hwang 557
+allplayers[allplayers$id=='520',11:22] <- allplayers[allplayers$id=='17',11:22] #Ramsdale 17 out for Vicario 520
 
 
-
-out<-c('398','278','349','500','387','397','51','372','525')
+out<-c('278','349','500','387','397','51','372','525','369','209','55','78','17')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
