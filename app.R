@@ -100,9 +100,24 @@ allplayers[allplayers$id=='557',11:22] <- allplayers[allplayers$id=='78',11:22] 
 allplayers[allplayers$id=='520',11:22] <- allplayers[allplayers$id=='17',11:22] #Ramsdale 17 out for Vicario 520
 allplayers[allplayers$id=='511',11:22] <- allplayers[allplayers$id=='103',11:22] #Henry 103 out for Romero 511
 allplayers[allplayers$id=='122',11:22] <- allplayers[allplayers$id=='601',11:22] #Danjuma 601 out for Adringa 122
+allplayers[allplayers$id=='117',11:31] <- allplayers[allplayers$id=='36',11:31] #Cash 36 out for Toney 117 pre 22
+allplayers[allplayers$id=='349',11:31] <- allplayers[allplayers$id=='429',11:31] #Tonali 429 out for KDB 349
+allplayers[allplayers$id=='225',11:22] <- allplayers[allplayers$id=='437',11:22] #Awoniyi 437 out for Edouard 225 pre 13
+allplayers[allplayers$id=='590',11:32] <- allplayers[allplayers$id=='424',11:32] #Pope 424 out for Cunha 590
+allplayers[allplayers$id=='34',11:32] <- allplayers[allplayers$id=='416',11:32] #Joelinton 416 out for Bailey 34
+allplayers[allplayers$id=='775',11:32] <- allplayers[allplayers$id=='140',11:32] #March 140 out for Brereton Diaz 775
+allplayers[allplayers$id=='757',11:32] <- allplayers[allplayers$id=='307',11:32] #Robertson 307 out for Bradley 757
+allplayers[allplayers$id=='689',11:32] <- allplayers[allplayers$id=='603',11:32] #Barnes 603 out for Kudus 689
 
 
-out<-c('278','349','500','387','397','51','372','525','369','209','55','78','17','103','601')
+
+
+
+
+
+
+
+out<-c('278','500','387','397','51','372','525','369','209','55','78','17','103','601','36','437','424','429','140','307','603','416')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
@@ -226,7 +241,7 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c('Warnes','Hodge','Luke','Luke','Warnes','Hodge','Tom','Tom','Hodge','Luke','Luke','Warnes','Tom','Luke','Tom','Hodge'),In=c('Tonali','Enzo','Leno','Walker','Rodri','Ward-Prowse','Udogie','Gordon','Cash','Shaw','Doku','Palmer','Hee-chan','Vicario','Adingra','Romero'),Out=c('De Bruyne','Kane','Mitrovic','Shaw','Sancho','Maguire','Mings','Anthony','Benrahma','Walker','Mount','Ramsey','Dango','Ramsdale','Danjuma','Henry'),BeforeGameweek=c('2','2','3','4','5','5','5','5','5','13','13','13','13','13','13','13'))
+  transfersDF <- data.frame(Player=c('Warnes','Hodge','Luke','Luke','Warnes','Hodge','Tom','Tom','Hodge','Luke','Luke','Warnes','Tom','Luke','Tom','Hodge','Warnes','Hodge','Warnes','Hodge','Luke','Tom','Warnes','Warnes'),In=c('Tonali','Enzo','Leno','Walker','Rodri','Ward-Prowse','Udogie','Gordon','Cash','Shaw','Doku','Palmer','Hee-chan','Vicario','Adingra','Romero','Edouard','Toney','De Bruyne','Cunha','Bailey','Brereton Diaz','Bradley','Kudus'),Out=c('De Bruyne','Kane','Mitrovic','Shaw','Sancho','Maguire','Mings','Anthony','Benrahma','Walker','Mount','Ramsey','Dango','Ramsdale','Danjuma','Henry','Awoniyi','Cash','Tonali','Pope','Joelinton','March','Robertson','Barnes'),BeforeGameweek=c('2','2','3','4','5','5','5','5','5','13','13','13','13','13','13','13','13','22','22','23','23','23','23','23'))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF))
   
