@@ -51,30 +51,8 @@ for(i in 1:nrow(players)){
   if(is.null(started)){started <- FALSE} #controls for blank GWs
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
-  if("7.1" %in% names(player_with_scores)){player_with_scores$`7` <- player_with_scores$`7`+player_with_scores$`7.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("7.1"))]}
-  if("22.1" %in% names(player_with_scores)){player_with_scores$`22` <- player_with_scores$`22`+player_with_scores$`22.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("22.1"))]}
-  if("23.1" %in% names(player_with_scores)){player_with_scores$`23` <- player_with_scores$`23`+player_with_scores$`23.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("23.1"))]}
-  if("25.1" %in% names(player_with_scores)){player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("25.1"))]}
-  if("26.1" %in% names(player_with_scores)){player_with_scores$`26` <- player_with_scores$`26`+player_with_scores$`26.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("26.1"))]}
-  if("28.1" %in% names(player_with_scores)){player_with_scores$`28` <- player_with_scores$`28`+player_with_scores$`28.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("28.1"))]}
-  if("29.1" %in% names(player_with_scores)){player_with_scores$`29` <- player_with_scores$`29`+player_with_scores$`29.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("29.1"))]}
-  if("31.1" %in% names(player_with_scores)){player_with_scores$`31` <- player_with_scores$`31`+player_with_scores$`31.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("31.1"))]}
-  if("33.1" %in% names(player_with_scores)){player_with_scores$`33` <- player_with_scores$`33`+player_with_scores$`33.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("33.1"))]}
-  if("34.1" %in% names(player_with_scores)){player_with_scores$`34` <- player_with_scores$`34`+player_with_scores$`34.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("34.1"))]}
-  if("36.1" %in% names(player_with_scores)){player_with_scores$`36` <- player_with_scores$`36`+player_with_scores$`36.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("36.1"))]}
-  if("37.1" %in% names(player_with_scores)){player_with_scores$`37` <- player_with_scores$`37`+player_with_scores$`37.1` 
-  player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("37.1"))]}
+  #if("7.1" %in% names(player_with_scores)){player_with_scores$`7` <- player_with_scores$`7`+player_with_scores$`7.1` 
+  #player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("7.1"))]}
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
 }})
@@ -86,46 +64,10 @@ gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
-allplayers[allplayers$id=='369',11:13] <- allplayers[allplayers$id=='398',11:13] #Walker 369 in for Shaw 398 pre GW4 LP
-allplayers[allplayers$id=='275',11:12] <- allplayers[allplayers$id=='278',11:12] #Leno 275 in for Mitrovic 278 pre gw3 LP
-allplayers[allplayers$id=='429',11:11] <- allplayers[allplayers$id=='349',11:11] #Tonali 429 in for De Bruyne 349 Warnes pre gw2
-allplayers[allplayers$id=='199',11:11] <- allplayers[allplayers$id=='500',11:11] #Enzo 199 in for Kane 500 Hodge pre gw2
-allplayers[allplayers$id=='664',11:14] <- allplayers[allplayers$id=='387',11:14] #JWP 664 in for Maguire 387 Hodge pre gw5
-allplayers[allplayers$id=='365',11:14] <- allplayers[allplayers$id=='397',11:14] #Rodri 365 in for Sancho 397 Warnes
-allplayers[allplayers$id=='519',11:14] <- allplayers[allplayers$id=='51',11:14] #Udogie 519 in for Mings 51
-allplayers[allplayers$id=='412',11:14] <- allplayers[allplayers$id=='372',11:14] #Gordon 412 in for Anthony 372
-allplayers[allplayers$id=='36',11:14] <- allplayers[allplayers$id=='525',11:14] #Benrahma 525 out for Cash 36
-allplayers[allplayers$id=='398',11:22] <- allplayers[allplayers$id=='369',11:22] #Walker 369 out for Shaw 398
-allplayers[allplayers$id=='678',11:22] <- allplayers[allplayers$id=='209',11:22] #Mason 209 out for Doku 678
-allplayers[allplayers$id=='362',11:22] <- allplayers[allplayers$id=='55',11:22] #Ramsey 55 out for Palmer 362
-allplayers[allplayers$id=='557',11:22] <- allplayers[allplayers$id=='78',11:22] #Dango 78 out for Hwang 557
-allplayers[allplayers$id=='520',11:22] <- allplayers[allplayers$id=='17',11:22] #Ramsdale 17 out for Vicario 520
-allplayers[allplayers$id=='511',11:22] <- allplayers[allplayers$id=='103',11:22] #Henry 103 out for Romero 511
-allplayers[allplayers$id=='122',11:22] <- allplayers[allplayers$id=='601',11:22] #Danjuma 601 out for Adringa 122
-allplayers[allplayers$id=='117',11:31] <- allplayers[allplayers$id=='36',11:31] #Cash 36 out for Toney 117 pre 22
-allplayers[allplayers$id=='349',11:31] <- allplayers[allplayers$id=='429',11:31] #Tonali 429 out for KDB 349
-allplayers[allplayers$id=='225',11:22] <- allplayers[allplayers$id=='437',11:22] #Awoniyi 437 out for Edouard 225 pre 13
-allplayers[allplayers$id=='590',11:32] <- allplayers[allplayers$id=='424',11:32] #Pope 424 out for Cunha 590
-allplayers[allplayers$id=='34',11:32] <- allplayers[allplayers$id=='416',11:32] #Joelinton 416 out for Bailey 34
-allplayers[allplayers$id=='775',11:32] <- allplayers[allplayers$id=='140',11:32] #March 140 out for Brereton Diaz 775
-allplayers[allplayers$id=='757',11:32] <- allplayers[allplayers$id=='307',11:32] #Robertson 307 out for Bradley 757
-allplayers[allplayers$id=='689',11:32] <- allplayers[allplayers$id=='603',11:32] #Barnes 603 out for Kudus 689
-allplayers[allplayers$id=='314',11:33] <- allplayers[allplayers$id=='230',11:33] #Johnstone 230 out for Adebayo 314 pre GW24
-allplayers[allplayers$id=='369',11:33] <- allplayers[allplayers$id=='391',11:33] #Lisandro Martinez 391 out for Walker 369
-allplayers[allplayers$id=='232',11:44] <- allplayers[allplayers$id=='519',11:44] #Lisandro Martinez 391 out for Walker 369 pre GE 35
+#allplayers[allplayers$id=='369',11:13] <- allplayers[allplayers$id=='398',11:13] #Walker 369 in for Shaw 398 pre GW4 LP
 
 
-
-
-
-
-
-
-
-
-
-
-out<-c('278','500','387','397','51','372','525','209','55','78','17','103','601','36','437','424','429','140','307','603','416','230','391','519')
+out<-c('999')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
@@ -249,9 +191,18 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c('Warnes','Hodge','Luke','Luke','Warnes','Hodge','Tom','Tom','Hodge','Luke','Luke','Warnes','Tom','Luke','Tom','Hodge','Warnes','Hodge','Warnes','Hodge','Luke','Tom','Warnes','Warnes','Luke','Hodge','Tom'),In=c('Tonali','Enzo','Leno','Walker','Rodri','Ward-Prowse','Udogie','Gordon','Cash','Shaw','Doku','Palmer','Hee-chan','Vicario','Adingra','Romero','Edouard','Toney','De Bruyne','Cunha','Bailey','Brereton Diaz','Bradley','Kudus','Adebayo','Walker','Mateta'),Out=c('De Bruyne','Kane','Mitrovic','Shaw','Sancho','Maguire','Mings','Anthony','Benrahma','Walker','Mount','Ramsey','Dango','Ramsdale','Danjuma','Henry','Awoniyi','Cash','Tonali','Pope','Joelinton','March','Robertson','Barnes','Johnstone','Martinez','Udogie'),BeforeGameweek=c('2','2','3','4','5','5','5','5','5','13','13','13','13','13','13','13','13','22','22','23','23','23','23','23','24','24','35'))
+  transfersDF <- data.frame(Player=c(''),
+                            In=c(''),
+                            Out=c(''),
+                            BeforeGameweek=c(''))
 
-  output$transfers <- DT::renderDataTable(datatable(transfersDF))
+  output$transfers <- DT::renderDataTable(datatable(transfersDF,rownames= FALSE))
+  
+  
+  orderDF <- data.frame(Pick=c('1','2','3','4'),
+                            Player=c('TBC','TBC','TBC','TBC'))
+  
+  output$order <- DT::renderDataTable(datatable(orderDF,rownames= FALSE))
   
   ###Keep Alive###
   output$keep_alive <- renderText({
@@ -269,7 +220,7 @@ ui<- dashboardPage(skin='green',
               dashboardHeader(title='Fantasy Scores'),
               dashboardSidebar(sidebarMenu(id="FantMenu",
                 menuItem("League Table",tabName="LeagueTable",icon=icon("list-ol")),                                           
-                menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol-o")),
+                menuItem("Player Scores",tabName="PlayerScores",icon=icon("futbol")),
                 menuItem("Transfers", tabName="Transfers",icon=icon("exchange")),
                 menuItem("Statistics", tabName="Stats",icon=icon("table")),
                 menuItem("Available players", tabName="PlayerFinder",icon=icon("search")),
@@ -301,7 +252,7 @@ ui<- dashboardPage(skin='green',
                                             width = '100%', inline = TRUE)),
                 fluidRow(DT::dataTableOutput("finder"))),
                 tabItem(tabName="Transfers",
-                fluidRow(DT::dataTableOutput("transfers")))
+                fluidRow(DT::dataTableOutput("transfers"),DT::dataTableOutput("order")))
               ),tags$head(includeScript("www/google.js")),tags$head(tags$script("var socket_timeout_interval;
 var n = 0;
 
