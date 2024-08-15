@@ -200,7 +200,7 @@ options(DT.options = list(paging=FALSE))
   
   
   orderDF <- data.frame(Pick=c('1','2','3','4'),
-                            Player=c('TBC','TBC','TBC','TBC'))
+                            Player=c('Hodge','Warnes','Luke','Tom'))
   
   output$order <- DT::renderDataTable(datatable(orderDF,rownames= FALSE))
   
