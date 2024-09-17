@@ -12,7 +12,7 @@ library(plotly)
 #load current scores from RDS file
 server<-shinyServer(function(input, output,session) {
 scorelist <- list()
-ffdata <- fromJSON('http://fantasy.premierleague.com/api/bootstrap-static/')
+ffdata <- jsonlite::fromJSON('http://fantasy.premierleague.com/api/bootstrap-static/')
 
 players_noteam <- ffdata$elements[,c("id","web_name","element_type","team_code","event_points","total_points","news","points_per_game")]
 teams <- ffdata$teams[,c("name","code")]
@@ -37,7 +37,7 @@ ppg$PPG <- as.numeric(ppg$PPG)
 currentGW <- match(TRUE,ffdata$events$is_current)
 withProgress(message = 'Loading...', value = 0,{
 for(i in 1:nrow(players)){
-  individual <- fromJSON(paste0("http://fantasy.premierleague.com/api/element-summary/",players[i,]$id,"/"))
+  individual <- jsonlite::fromJSON(paste0("http://fantasy.premierleague.com/api/element-summary/",players[i,]$id,"/"))
   tryCatch({roundscores <- transpose(individual$history[,c("round","total_points")])},error=function(e){roundscores <<- as.data.frame(matrix(c(1,2,3,0,0,0), nrow=2, ncol=3,byrow=TRUE))})
   tryCatch({minsplayed <- individual$history[individual$history$round==max(individual$history$round),][,c("minutes")]},error=function(e){minsplayed<<-0},warning=function(w){minsplayed<<-0})
   names(roundscores) <- c(roundscores[1,])
@@ -64,10 +64,16 @@ gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
-#allplayers[allplayers$id=='369',11:13] <- allplayers[allplayers$id=='398',11:13] #Walker 369 in for Shaw 398 pre GW4 LP
+allplayers[allplayers$id=='617',11:13] <- allplayers[allplayers$id=='387',11:13] #Evanilson 617 in for Shaw 387 pre GW4 Hodge
+allplayers[allplayers$id=='177',11:13] <- allplayers[allplayers$id=='378',11:13] #Madueke 177 in for Mainoo 378 pre GW4 Warnes
+allplayers[allplayers$id=='293',11:13] <- allplayers[allplayers$id=='341',11:13] #Hermansen 293 in for Ake 341 pre GW4 LP
+allplayers[allplayers$id=='233',11:13] <- allplayers[allplayers$id=='565',11:13] #Onana 233 in for Sarabia 565 pre GW4 Tom
+allplayers[allplayers$id=='248',11:13] <- allplayers[allplayers$id=='349',11:13] #Leno 248 in for Grealish 349 pre GW4 Hodge
+allplayers[allplayers$id=='326',11:13] <- allplayers[allplayers$id=='108',11:13] #Konate 326 in for Toney 108 pre GW4 Warnes
 
 
-out<-c('999')
+
+out<-c('999','387','378','341','565','349','108')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
@@ -191,10 +197,10 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c(''),
-                            In=c(''),
-                            Out=c(''),
-                            BeforeGameweek=c(''))
+  transfersDF <- data.frame(Player=c('Hodge','Luke','Warnes','Tom','Hodge','Warnes'),
+                            In=c('Evanilson','Hermansen','Madueke','Onana','Leno','Konate'),
+                            Out=c('Shaw','Ake','Mainoo','Sarabia','Grealish','Toney'),
+                            BeforeGameweek=c('4','4','4','4','4','4'))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF,rownames= FALSE))
   
