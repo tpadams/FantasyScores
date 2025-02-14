@@ -51,7 +51,8 @@ for(i in 1:nrow(players)){
   if(is.null(started)){started <- FALSE} #controls for blank GWs
   player_with_scores <- cbind(player_with_scores,started)
   #you need to combine the two games in the double GWs and then remove the extra GW entry (e.g. 22.1)
-  #if("7.1" %in% names(player_with_scores)){player_with_scores$`7` <- player_with_scores$`7`+player_with_scores$`7.1` 
+  if("24.1" %in% names(player_with_scores)){player_with_scores$`24` <- player_with_scores$`24`+player_with_scores$`24.1`}
+  if("25.1" %in% names(player_with_scores)){player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1`}
   #player_with_scores<-player_with_scores[,!(names(player_with_scores) %in% c("7.1"))]}
   scorelist[[i]] <- player_with_scores #}
   incProgress(amount=1/nrow(players),detail=paste("Player: ",i,"/",nrow(players)))
@@ -81,9 +82,9 @@ allplayers[allplayers$id=='573',11:29] <- allplayers[allplayers$id=='79',11:29] 
 allplayers[allplayers$id=='399',11:29] <- allplayers[allplayers$id=='418',11:29] #Trippier 418 out for Hall 399 pre gw21
 allplayers[allplayers$id=='252',11:29] <- allplayers[allplayers$id=='589',11:29] #Fullkrug 589 out for Jiminez 252 pre gw21
 allplayers[allplayers$id=='268',11:29] <- allplayers[allplayers$id=='2',11:29] #Jesus 2 out for Delap 268 pre gw21
+allplayers[allplayers$id=='232',11:32] <- allplayers[allplayers$id=='38',11:32] #Duran out for Ndiaye
 
-
-out<-c('999','387','378','341','565','349','108','360','45','251','550','513','508','79','418','589','2')
+out<-c('999','387','378','341','565','349','108','360','45','251','550','513','508','79','418','589','2','38')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
