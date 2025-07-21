@@ -83,8 +83,19 @@ allplayers[allplayers$id=='399',11:29] <- allplayers[allplayers$id=='418',11:29]
 allplayers[allplayers$id=='252',11:29] <- allplayers[allplayers$id=='589',11:29] #Fullkrug 589 out for Jiminez 252 pre gw21
 allplayers[allplayers$id=='268',11:29] <- allplayers[allplayers$id=='2',11:29] #Jesus 2 out for Delap 268 pre gw21
 allplayers[allplayers$id=='232',11:32] <- allplayers[allplayers$id=='38',11:32] #Duran out for Ndiaye
+allplayers[allplayers$id=='70',11:34] <- allplayers[allplayers$id=='180',11:34] #Jackson 180 out for Kerkez 70 preGW25
+allplayers[allplayers$id=='755',11:34] <- allplayers[allplayers$id=='52',11:34] #Pau Torres 52 out for Marmoush 755 preGW25
+allplayers[allplayers$id=='422',11:34] <- allplayers[allplayers$id=='220',11:34] #DCL 220 out for Aina 422  preGW25
+allplayers[allplayers$id=='218',11:34] <- allplayers[allplayers$id=='4',11:34] #Havertz 4 out for Beto 218  preGW25
+allplayers[allplayers$id=='236',11:34] <- allplayers[allplayers$id=='340',11:34] #Akanji 340 out for Tarko 236 preGW25
+allplayers[allplayers$id=='540',11:34] <- allplayers[allplayers$id=='498',11:34] #Romero 498 out for Huijsen 540 preGW25
+allplayers[allplayers$id=='423',11:34] <- allplayers[allplayers$id=='232',11:34] #Ndiaye 232 out for Anderson 432 pregw25
+allplayers[allplayers$id=='650',11:34] <- allplayers[allplayers$id=='333',11:34] #Quansah 333 out for Lacroix 650 pregw25
+allplayers[allplayers$id=='152',11:34] <- allplayers[allplayers$id=='185',11:34] #Sanchez 185 out for Kepa 152 pregw25
 
-out<-c('999','387','378','341','565','349','108','360','45','251','550','513','508','79','418','589','2','38')
+
+
+out<-c('999','387','378','341','565','349','108','360','45','251','550','513','508','79','418','589','2','38','180','52','220','4','340','498','232','333','185')
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
@@ -208,10 +219,10 @@ options(DT.options = list(paging=FALSE))
   
   #####TRANSFERS######
   
-  transfersDF <- data.frame(Player=c('Hodge','Luke','Warnes','Tom','Hodge','Warnes','Warnes','Tom','Warnes','Hodge','Hodge','Tom','Warnes','Tom','Tom','Luke'),
-                            In=c('Evanilson','Hermansen','Madueke','Onana','Leno','Konate','Duran','Rogers','Welbeck','Rutter','Sanchez','Sels','Senesi','Trippier','Fullkrug','Jesus'),
-                            Out=c('Shaw','Ake','Mainoo','Sarabia','Grealish','Toney','Rodri','Maatsen','Muniz','Hwang','Areola','Vicario','Milenkovic','Hall','Jiminez','Delap'),
-                            BeforeGameweek=c('4','4','4','4','4','4','6','12','12','12','12','14','21','21','21','21'))
+  transfersDF <- data.frame(Player=c('Hodge','Luke','Warnes','Tom','Hodge','Warnes','Warnes','Tom','Warnes','Hodge','Hodge','Tom','Warnes','Tom','Tom','Luke','Warnes','Luke','Luke','Hodge','Warnes','Tom','Tom','Warnes','Luke','Hodge'),
+                            In=c('Evanilson','Hermansen','Madueke','Onana','Leno','Konate','Duran','Rogers','Welbeck','Rutter','Sanchez','Sels','Senesi','Trippier','Fullkrug','Jesus','Duran','Jackson','Pau Torres','Calvert-Lewin','Havertz','Akanji','Romero','Ndiaye','Quansah','Sanchez'),
+                            Out=c('Shaw','Ake','Mainoo','Sarabia','Grealish','Toney','Rodri','Maatsen','Muniz','Hwang','Areola','Vicario','Milenkovic','Hall','Jiminez','Delap','Ndiaye','Kerkez','Marmoush','Aina','Beto','Tarkowski','Huijsen','Anderson','Lacroix','Kepa'),
+                            BeforeGameweek=c('4','4','4','4','4','4','6','12','12','12','12','14','21','21','21','21','23','25','25','25','25','25','25','25','25','25'))
 
   output$transfers <- DT::renderDataTable(datatable(transfersDF,rownames= FALSE))
   
