@@ -368,8 +368,38 @@ premier_league_css <- "
     background-color: #37003c !important;
   }
   
-  .navbar-light .navbar-brand {
+  /* Custom brand styling - targeting our specific element */
+  .custom-brand {
     color: white !important;
+    background-color: #00ff87 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    font-weight: bold !important;
+    font-size: 1.3em !important;
+    text-transform: none !important;
+    letter-spacing: 1px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: 250px !important;
+    display: block !important;
+    text-align: center !important;
+  }
+  
+  /* Aggressive hover/focus/active state control */
+  .custom-brand:hover,
+  .custom-brand:focus,
+  .custom-brand:active,
+  .custom-brand:visited,
+  .custom-brand:link {
+    color: white !important;
+    background-color: #00ff87 !important;
+    border: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transform: none !important;
   }
   
   .navbar-light .navbar-toggler {
@@ -440,11 +470,10 @@ ui <- dashboardPage(
   
   # Modern Header
   header = dashboardHeader(
-    title = dashboardBrand(
-      title = "Fantscores.uk",
-      color = "primary",
+    title = tags$a(
+      class = "navbar-brand custom-brand",
       href = "#",
-      image = NULL
+      "Fantscores.uk"
     )
   ),
   
@@ -518,6 +547,7 @@ ui <- dashboardPage(
             @media (max-width: 768px) {
               .content-wrapper {
                 padding: 10px !important;
+                transition: margin-left 0.3s ease !important;
               }
               
               .card {
@@ -548,9 +578,38 @@ ui <- dashboardPage(
                 padding: 8px 16px !important;
               }
               
-              /* Sidebar stays expanded on mobile when needed */
+              /* Restore proper sidebar responsive behavior */
               .main-sidebar {
-                transition: width 0.3s ease;
+                position: fixed !important;
+                top: 0 !important;
+                left: -250px !important;
+                width: 250px !important;
+                height: 100vh !important;
+                transition: left 0.3s ease !important;
+                z-index: 1040 !important;
+              }
+              
+              /* When sidebar is open on mobile */
+              .sidebar-open .main-sidebar {
+                left: 0 !important;
+              }
+              
+              /* Add overlay when sidebar is open on mobile */
+              .sidebar-open::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 1030;
+              }
+              
+              /* Ensure main content stays in place */
+              .content-wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
               }
               
               /* Stack cards vertically on mobile */
@@ -839,6 +898,31 @@ ui <- dashboardPage(
       });
       $(document).on('shiny:disconnected', function(event) {
         clearInterval(socket_timeout_interval)
+      });
+      
+      // Simplified brand protection + Mobile sidebar behavior
+      $(document).ready(function() {
+        $('.custom-brand').on('focus blur', function(e) {
+          e.preventDefault();
+          $(this).blur();
+        });
+        
+        // Ensure proper mobile sidebar behavior
+        if (window.innerWidth <= 768) {
+          $('body').addClass('sidebar-mini sidebar-collapse');
+          
+          // Handle sidebar toggle on mobile
+          $(document).on('click', '.sidebar-toggle', function() {
+            $('body').toggleClass('sidebar-open');
+          });
+          
+          // Close sidebar when clicking overlay
+          $(document).on('click', function(e) {
+            if ($(e.target).closest('.main-sidebar, .sidebar-toggle').length === 0) {
+              $('body').removeClass('sidebar-open');
+            }
+          });
+        }
       });
     ")),
     tags$head(tags$style(HTML("#keep_alive { visibility: hidden; }")))
