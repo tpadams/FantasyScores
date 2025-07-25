@@ -7,19 +7,16 @@ library(ggplot2)
 library(DT)
 library(bs4Dash)
 library(plotly)
-library(future.apply)
-library(future)
 library(shinycssloaders)
 
 #setwd("~/GitHub/FantasyScores/")
 
-# Set up parallel processing
-plan(multisession, workers = 4) # Adjust workers based on your system
-
 #load current scores from RDS file
 server<-shinyServer(function(input, output,session) {
+# Fresh data load every session - no caching
 scorelist <- list()
-ffdata <- jsonlite::fromJSON('http://fantasy.premierleague.com/api/bootstrap-static/')
+# Add cache-busting to main API call
+ffdata <- jsonlite::fromJSON(paste0('http://fantasy.premierleague.com/api/bootstrap-static/?t=', as.numeric(Sys.time())))
 
 players_noteam <- ffdata$elements[,c("id","web_name","element_type","team_code","event_points","total_points","news","points_per_game")]
 teams <- ffdata$teams[,c("name","code")]
@@ -43,17 +40,40 @@ ppg$PPG <- as.numeric(ppg$PPG)
 
 currentGW <- match(TRUE,ffdata$events$is_current)
 
-# Simple progress with parallel processing
-withProgress(message = 'Loading player data...', value = 0, {
+# Smart caching system - load from RDS if less than 2 minutes old
+cache_file <- "player_data_cache.rds"
+use_cache <- FALSE
+
+# Check if cache file exists and is fresh (less than 2 minutes old)
+if (file.exists(cache_file)) {
+  file_age_minutes <- as.numeric(difftime(Sys.time(), file.mtime(cache_file), units = "mins"))
+  if (file_age_minutes < 2) {
+    use_cache <- TRUE
+  }
+}
+
+if (use_cache) {
+  # Load from cache
+  withProgress(message = 'Loading cached player data...', value = 0, {
+    scorelist <- readRDS(cache_file)
+    incProgress(1, detail = paste("Loaded", length(scorelist), "players from cache"))
+  })
+} else {
+  # Fresh API calls with progress bar
+  withProgress(message = 'Loading fresh player data...', value = 0, {
   
-  # Create parallel function (simplified - no per-worker progress)
-  fetch_player_data <- function(i) {
+for(i in 1:nrow(players)){
     player_id <- players[i,]$id
     
-    # API call with error handling
+    # API call with cache-busting using fromJSON directly
     individual <- tryCatch({
-      jsonlite::fromJSON(paste0("http://fantasy.premierleague.com/api/element-summary/", player_id, "/"))
+      # Add cache-busting timestamp to prevent caching
+      api_url <- paste0("http://fantasy.premierleague.com/api/element-summary/", player_id, "/?t=", as.numeric(Sys.time()))
+      
+      # Use jsonlite directly
+      jsonlite::fromJSON(api_url)
     }, error = function(e) {
+      # Fallback - minimal data structure
       return(list(history = data.frame(), fixtures = data.frame()))
     })
     
@@ -74,36 +94,37 @@ withProgress(message = 'Loading player data...', value = 0, {
     })
     
     # Format data
-    names(roundscores) <- c(roundscores[1,])
-    temp <- names(roundscores)
-    roundscores <- data.frame(roundscores[2,])
-    names(roundscores) <- temp
+  names(roundscores) <- c(roundscores[1,])
+  temp <- names(roundscores) #store names for reassignment
+  roundscores <- data.frame(roundscores[2,])
+  names(roundscores) <- temp
     player_with_scores <- cbind(players[i,], roundscores)
-    player_with_scores$`GW minutes` <- sum(minsplayed)
-    player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
+  player_with_scores$`GW minutes` <- sum(minsplayed)
+  player_with_scores <- player_with_scores[,c(1:5,ncol(player_with_scores),6:(ncol(player_with_scores)-1))]
     
     # Check if started
-    started <- ifelse(currentGW==min(individual$fixtures$event,na.rm=T),0,1)
-    if(is.null(started)){started <- FALSE}
+  started <- ifelse(currentGW==min(individual$fixtures$event,na.rm=T),0,1)
+  if(is.null(started)){started <- FALSE} #controls for blank GWs
     player_with_scores <- cbind(player_with_scores, started)
     
     # Handle double gameweeks
-    if("24.1" %in% names(player_with_scores)){
-      player_with_scores$`24` <- player_with_scores$`24`+player_with_scores$`24.1`
-    }
-    if("25.1" %in% names(player_with_scores)){
-      player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1`
-    }
+    # if("24.1" %in% names(player_with_scores)){
+    #   player_with_scores$`24` <- player_with_scores$`24`+player_with_scores$`24.1`
+    # }
+    # if("25.1" %in% names(player_with_scores)){
+    #   player_with_scores$`25` <- player_with_scores$`25`+player_with_scores$`25.1`
+    # }
     
-    return(player_with_scores)
+    scorelist[[i]] <- player_with_scores
+    
+    # Update progress for each player
+    incProgress(amount = 1/nrow(players), detail = paste("Loading player", i, "of", nrow(players)))
   }
   
-  # Execute in parallel
-  scorelist <- future_lapply(1:nrow(players), fetch_player_data, future.seed = TRUE)
-  
-  # Update progress at the end
-  incProgress(1, detail = paste("Loaded", nrow(players), "players"))
-})
+  # Save fresh data to cache
+  saveRDS(scorelist, cache_file)
+  })
+}
 
 allplayers <- dplyr::bind_rows(scorelist)
 gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
@@ -254,7 +275,83 @@ options(DT.options = list(paging=FALSE))
   })
   
   #gameweekpoints[gameweekpoints$Week>29,]$Week <- gameweekpoints[gameweekpoints$Week>29,]$Week -9
-  output$graph <-renderPlotly(ggplot(data=gameweekpoints,aes(x=Week,y=Cumulative)) +geom_line(aes(colour=Player),size=2) +geom_point(aes(text=paste("Points:",Points))) +scale_x_continuous(breaks= c(1:38)))
+  
+  # Create beautiful Premier League themed graph
+  output$graph <- renderPlotly({
+    # Validate data is available and not empty
+    req(exists("gameweekpoints"))
+    req(nrow(gameweekpoints) > 0)
+    req(all(c("Week", "Cumulative", "Player", "Points") %in% names(gameweekpoints)))
+    
+    # Define Premier League colors for each player
+    pl_colors <- c("Tom" = "#37003c", "Warnes" = "#00ff87", "Hodge" = "#17a2b8", "Luke" = "#ffc107")
+    
+    # Create the plot with error handling
+    tryCatch({
+      pg <- ggplot(data = gameweekpoints, aes(x = Week, y = Cumulative, color = Player)) +
+        # Add lines with custom colors
+        geom_line(aes(group = Player), size = 3, alpha = 0.8) +
+        
+        # Add points with hover information
+        geom_point(aes(text = paste0("<b>", Player, "</b><br>",
+                                     "Gameweek: ", Week, "<br>",
+                                     "GW Points: ", Points, "<br>",
+                                     "Total: ", Cumulative)),
+                   size = 4, alpha = 0.9) +
+        
+        # Custom color scheme
+        scale_color_manual(values = pl_colors) +
+        
+        # Professional styling
+        scale_x_continuous(breaks = seq(1, 38, 2), 
+                          minor_breaks = 1:38,
+                          expand = c(0.02, 0)) +
+        scale_y_continuous(expand = c(0.02, 0)) +
+        
+        # Labels and title
+        labs(title = "Points by week",
+             subtitle = "Cumulative points by gameweek",
+             x = "Gameweek",
+             y = "Cumulative Points",
+             color = "Manager") +
+        
+        # Premium theme
+        theme_minimal(base_size = 14) +
+        theme(
+          plot.title = element_text(size = 18, face = "bold", color = "#37003c", hjust = 0.5),
+          plot.subtitle = element_text(size = 14, color = "#666666", hjust = 0.5, margin = margin(b = 20)),
+          axis.title = element_text(size = 12, face = "bold", color = "#37003c"),
+          axis.text = element_text(size = 11, color = "#555555"),
+          legend.title = element_text(size = 12, face = "bold", color = "#37003c"),
+          legend.text = element_text(size = 11),
+          legend.position = "bottom",
+          panel.grid.major = element_line(color = "#f0f0f0", size = 0.5),
+          panel.grid.minor = element_line(color = "#f8f8f8", size = 0.3),
+          plot.background = element_rect(fill = "white", color = NA),
+          panel.background = element_rect(fill = "white", color = NA),
+          legend.box.background = element_rect(fill = "white", color = NA)
+        )
+      
+      # Convert to plotly with custom configuration
+      ggplotly(pg, tooltip = "text") %>%
+        layout(
+          font = list(family = "Arial", size = 12),
+          hovermode = "closest",
+          showlegend = TRUE
+        ) %>%
+        config(
+          displayModeBar = TRUE,
+          modeBarButtonsToRemove = c("pan2d", "select2d", "lasso2d", "autoScale2d", "hoverClosestCartesian", "hoverCompareCartesian"),
+          displaylogo = FALSE
+        )
+    }, error = function(e) {
+      # Fallback: return a simple plot if main plot fails
+      plot_ly(x = 1, y = 1, type = "scatter", mode = "markers") %>%
+        layout(title = "Loading chart data...", 
+               xaxis = list(title = "Gameweek"),
+               yaxis = list(title = "Points"))
+    })
+  })
   
   ########Other Stats#########
   output$notpicked <- DT::renderDataTable({
@@ -649,7 +746,7 @@ ui <- dashboardPage(
           ")))
         ),
     
-    tabItems(
+                tabItems(
       # Modern League Table Tab
       tabItem(
         tabName = "LeagueTable",
@@ -813,9 +910,9 @@ ui <- dashboardPage(
             checkboxGroupInput(
               "Columns",
               label = "Select statistics to display:",
-              choiceValues = c("GW points","News","points_per_game","minutes","goals_scored","assists",
-                              "clean_sheets","goals_conceded","penalties_saved","penalties_missed","own_goals","yellow_cards",
-                              "red_cards","saves","bonus","ict_index"),
+                                            choiceValues = c("GW points","News","points_per_game","minutes","goals_scored","assists",
+                                                        "clean_sheets","goals_conceded","penalties_saved","penalties_missed","own_goals","yellow_cards",
+                                                        "red_cards","saves","bonus","ict_index"),
               choiceNames = c("Current GW","News","PPG","Minutes","Goals","Assists","Clean Sheets",
                              "Goals Conceded","Pen Saves","Pen Misses","Own Goals","Yellow Cards","Red Cards","Saves",
                              "Bonus","ICT Index"),
@@ -890,14 +987,14 @@ ui <- dashboardPage(
     tags$head(includeScript("www/google.js")),
     tags$head(tags$script("
       var socket_timeout_interval;
-      var n = 0;
-      $(document).on('shiny:connected', function(event) {
-        socket_timeout_interval = setInterval(function() {
-          Shiny.onInputChange('alive_count', n++)
-        }, 100);
-      });
-      $(document).on('shiny:disconnected', function(event) {
-        clearInterval(socket_timeout_interval)
+var n = 0;
+$(document).on('shiny:connected', function(event) {
+  socket_timeout_interval = setInterval(function() {
+    Shiny.onInputChange('alive_count', n++)
+  }, 100);
+});
+$(document).on('shiny:disconnected', function(event) {
+  clearInterval(socket_timeout_interval)
       });
       
       // Simplified brand protection + Mobile sidebar behavior
@@ -928,5 +1025,5 @@ ui <- dashboardPage(
     tags$head(tags$style(HTML("#keep_alive { visibility: hidden; }")))
   )
 )
-
+                        
 shinyApp(ui = ui, server = server)
