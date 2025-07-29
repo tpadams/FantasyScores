@@ -17,6 +17,7 @@ server<-shinyServer(function(input, output,session) {
 scorelist <- list()
 # Add cache-busting to main API call
 ffdata <- jsonlite::fromJSON(paste0('http://fantasy.premierleague.com/api/bootstrap-static/?t=', as.numeric(Sys.time())))
+##Add something to check if currentGW is finsihed or not?
 
 players_noteam <- ffdata$elements[,c("id","web_name","element_type","team_code","event_points","total_points","news","points_per_game")]
 teams <- ffdata$teams[,c("name","code")]
@@ -42,13 +43,15 @@ currentGW <- match(TRUE,ffdata$events$is_current)
 
 # Smart caching system - load from RDS if less than 2 minutes old
 cache_file <- "player_data_cache.rds"
-use_cache <- FALSE
+use_cache <- TRUE
 
 # Check if cache file exists and is fresh (less than 2 minutes old)
 if (file.exists(cache_file)) {
   file_age_minutes <- as.numeric(difftime(Sys.time(), file.mtime(cache_file), units = "mins"))
-  if (file_age_minutes < 2) {
-    use_cache <- TRUE
+  if (file_age_minutes > 2 & sum(ffdata$events$is_current) == 1) {
+    use_cache <- FALSE
+  } else if(file_age_minutes>1339){
+    use_cache <- FALSE
   }
 }
 
