@@ -43,8 +43,7 @@ currentGW <- match(TRUE,ffdata$events$is_current)
 
 # Smart caching system - load from RDS if less than 2 minutes old
 cache_file <- "player_data_cache.rds"
-use_cache <- TRUE
-print(file.exists(cache_file))
+
 
 # Check if cache file exists and is fresh (less than 2 minutes old)
 if (file.exists(cache_file)) {
@@ -53,7 +52,11 @@ if (file.exists(cache_file)) {
     use_cache <- FALSE
   } else if(file_age_minutes>1339){
     use_cache <- FALSE
+  } else{
+    use_cache <- TRUE
   }
+} else{
+  use_cache <- FALSE
 }
 
 if (use_cache) {
