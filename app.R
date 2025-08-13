@@ -171,7 +171,8 @@ assign("Tom",finaldf$Tom)
 assign("Warnes",finaldf$Warnes)
 assign("Hodge",finaldf$Hodge)
 assign("Luke",finaldf$Luke)
-for(q in c("Tom","Warnes","Hodge","Luke")){
+assign("Robohand",finaldf$Robohand)
+for(q in c("Tom","Warnes","Hodge","Luke","Robohand")){
 assign(paste0(q), get(q)[,c(1:9,11:ncol(get(q)))])
 gwscores<-sapply(get(q)[10:ncol(get(q))],function(x) sum(head(sort(x, decreasing=TRUE), 11))) #11 is scored players.
 assign(paste0("gwpoints",q),data.frame(q,names(gwscores),gwscores))
@@ -180,10 +181,10 @@ assign(paste0("gwpoints",q),get(paste0("gwpoints",q)) %>%
   mutate(cumsum = cumsum(gwscores)))
 }
 
-gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsHodge,gwpointsLuke)
+gameweekpoints<- dplyr::bind_rows(gwpointsTom,gwpointsWarnes,gwpointsHodge,gwpointsLuke,gwpointsRobohand)
 names(gameweekpoints) <- c("Player","Week","Points","Cumulative") #create frame of gameweeks and how many points scored
 gws
-gameweekpoints$Week <- rep(as.numeric(gws),4)
+gameweekpoints$Week <- rep(as.numeric(gws),5)
 gameweekpoints <- gameweekpoints[!is.na(gameweekpoints$Week),]
 gameweekpoints <- arrange(gameweekpoints,Player,Week)
 
@@ -195,7 +196,8 @@ options(DT.options = list(paging=FALSE))
            "Tom" = Tom,
            "Warnes" = Warnes,
            "Hodge" = Hodge,
-           "Luke" = Luke
+           "Luke" = Luke,
+           "Robohand" = Robohand
            )
   a[,!names(a)%in%c("started")]
   }) #get player
@@ -291,7 +293,7 @@ options(DT.options = list(paging=FALSE))
     req(all(c("Week", "Cumulative", "Player", "Points") %in% names(gameweekpoints)))
     
     # Define Premier League colors for each player
-    pl_colors <- c("Tom" = "#37003c", "Warnes" = "#00ff87", "Hodge" = "#17a2b8", "Luke" = "#ffc107")
+    pl_colors <- c("Tom" = "#37003c", "Warnes" = "#00ff87", "Hodge" = "#17a2b8", "Luke" = "#ffc107","Robohand"="#0674E4")
     
     # Create the plot with error handling
     tryCatch({
@@ -434,7 +436,7 @@ options(DT.options = list(paging=FALSE))
   })
   
   orderDF <- data.frame(Pick=c('1','2','3','4'),
-                            Player=c('Tom','Luke','Warnes','Hodge'))
+                            Player=c('Warnes','Hodge','Tom','Luke'))
   
   output$order <- DT::renderDataTable({
     datatable(orderDF,
@@ -541,6 +543,7 @@ premier_league_css <- "
   .btn-primary {
     background-color: #37003c !important;
     border-color: #37003c !important;
+    color: #FFFFFF !important;
   }
   
   .btn-primary:hover {
@@ -808,7 +811,7 @@ ui <- dashboardPage(
               selectInput(
                 "p", 
                 "Choose Player:",
-                choices = c("Tom", "Warnes", "Hodge", "Luke"),
+                choices = c("Tom", "Warnes", "Hodge", "Luke","Robohand"),
                 selected = "Tom"
               )
             )
@@ -966,7 +969,7 @@ ui <- dashboardPage(
           column(
             width = 12, md = 4,
             bs4Card(
-              title = "Draft Order",
+              title = "Next Snake Order",
               status = "success",
               solidHeader = TRUE, 
               collapsible = FALSE,
