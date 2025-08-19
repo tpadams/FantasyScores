@@ -48,7 +48,7 @@ cache_file <- "player_data_cache.rds"
 # Check if cache file exists and is fresh (less than 2 minutes old)
 if (file.exists(cache_file)) {
   file_age_minutes <- as.numeric(difftime(Sys.time(), file.mtime(cache_file), units = "mins"))
-  if (file_age_minutes > 2 & sum(ffdata$events$is_current) == 1) {
+  if (file_age_minutes > 2 & (sum(ffdata$events$is_current) > sum(ffdata$events$finished))) {
     use_cache <- FALSE
   } else if(file_age_minutes>1339){
     use_cache <- FALSE
@@ -214,22 +214,51 @@ options(DT.options = list(paging=FALSE))
   })
   
   output$playerscores <- DT::renderDataTable({
-    datatable(DF()[-c(1,9)], 
-              rownames=FALSE,
-              class = 'table-striped table-hover',
-              options=list(
-                order=list(3,'desc'),
-                scrollX=TRUE,
-                pageLength = 15,
-                dom = 'Bfrtip',
-                responsive = TRUE,
-                columnDefs = list(list(className = 'dt-center', targets = '_all'))
-              )) %>% 
-    formatStyle(colnames(DF())[c(5,10:ncol(DF()))], 
-                color = styleInterval(c(0.56), c('#dc3545','#28a745')),
-                fontWeight = 'bold') %>%
-    formatStyle(0, target = 'row', lineHeight='80%')
+    datatable(
+      DF()[-c(1,9)], 
+      rownames = FALSE,
+      class = 'table-striped table-hover',
+      options = list(
+        order = list(3, 'desc'),
+        scrollX = TRUE,
+        pageLength = 15,
+        dom = 'Bfrtip',
+        responsive = TRUE,
+        columnDefs = list(
+          list(className = 'dt-center', targets = '_all')
+        ),
+        
+        # ✅ Insert rowCallback here
+        rowCallback = JS(
+          "function(row, data, index) {",
+          "  var green = '#28a745';",
+          "  var red = '#dc3545';",
+          "  var color = index < 11 ? green : red;",
+          "",
+          "  // Style gw points (index 3)",
+          "  $('td:eq(3)', row).css('color', color);",
+          "",
+          "  // Style gw1column (index 7) if it exists",
+          "  if ($('td', row).length >= 5) {",
+          "    $('td:eq(7)', row).css('color', color);",
+          "  }",
+          "",
+          "  // Style any column after gw1",
+          "  $('td:gt(7)', row).css('color', color);",
+          "}"
+        )
+      )
+    ) %>%
+      
+      # Keep formatStyle for bold font
+      formatStyle(
+        colnames(DF())[c(5, 10:ncol(DF()))], 
+        fontWeight = 'bold'
+      ) %>%
+      
+      formatStyle(0, target = 'row', lineHeight = '80%')
   })
+  
   
   
   ##################LEAGUE TABLE##############
