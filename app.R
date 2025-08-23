@@ -48,11 +48,11 @@ cache_file <- "player_data_cache.rds"
 # Check if cache file exists and is fresh (less than 2 minutes old)
 if (file.exists(cache_file)) {
   file_age_minutes <- as.numeric(difftime(Sys.time(), file.mtime(cache_file), units = "mins"))
-  if (file_age_minutes > 2 & (sum(ffdata$events$is_current) > sum(ffdata$events$finished))) {
-    use_cache <- FALSE
-  } else if(file_age_minutes>1339){
-    use_cache <- FALSE
-  } else{
+  if (file_age_minutes > 2 & (sum(ffdata$events$is_current)+sum(ffdata$events$is_previous) > sum(ffdata$events$finished))) { #if older than 2 mins and GW is active
+    use_cache <- FALSE #then get new data
+  } else if(file_age_minutes>1339){ #if data older than a day
+    use_cache <- FALSE #then get new data
+  } else{ #otherwise use the cahce
     use_cache <- TRUE
   }
 } else{
@@ -344,7 +344,7 @@ options(DT.options = list(paging=FALSE))
         scale_x_continuous(breaks = seq(1, 38, 2), 
                           minor_breaks = 1:38,
                           expand = c(0.02, 0)) +
-        scale_y_continuous(expand = c(0.02, 0)) +
+        scale_y_continuous(expand = c(0.10, 0)) +
         
         # Labels and title
         labs(title = "Points by week",
