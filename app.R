@@ -140,10 +140,40 @@ gws <- as.character(seq(1,max(as.numeric(names(allplayers)),na.rm=T)))
 allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minutes","Total points","News","Picked by","started",gws)]
 
 ##########################IN########################################OUT################################
-#allplayers[allplayers$id=='617',11:13] <- allplayers[allplayers$id=='387',11:13] #Evanilson 617 in for Shaw 387 pre GW4 Hodge
+# Simplified Transfer System
+# Create a dataframe with transfer information
+transfers_df <- data.frame(
+  player_out = c('267','206','38','53','18','250','417'),      # Player ID being transferred out
+  player_in = c('220','717','419','714','736','726','453'),       # Player ID being transferred in  
+  before_gw = c(4,4,4,4,4,4,4),           # Gameweek the transfer was made before
+  manager = c('Luke','Warnes','Hodge','Tom','Hodge','Tom','Warnes'),       # Manager making the transfer
+  stringsAsFactors = FALSE
+)
+
+# Function to apply transfers automatically
+apply_transfers <- function(allplayers, transfers_df) {
+  for(i in 1:nrow(transfers_df)) {
+    player_out_id <- transfers_df$player_out[i]
+    player_in_id <- transfers_df$player_in[i]
+    before_gw <- transfers_df$before_gw[i]
+    
+    # Calculate column range: columns 11+ are gameweeks, so before_gw means columns 11:(11+before_gw-2)
+    # For example: before GW4 means copy GW1, GW2, GW3 which are columns 11:13
+    start_col <- 11
+    end_col <- 11 + before_gw - 2
+    
+    # Apply the transfer
+    allplayers[allplayers$id == player_in_id, start_col:end_col] <- 
+      allplayers[allplayers$id == player_out_id, start_col:end_col]
+  }
+  return(allplayers)
+}
+
+# Apply transfers
+allplayers <- apply_transfers(allplayers, transfers_df)
 
 
-out<-c('999')
+out<-transfers_df$player_out
 
 
 notpicked <- subset(playerscopy, !(id %in% players$id & !id %in% out))
@@ -444,15 +474,26 @@ options(DT.options = list(paging=FALSE))
     }
   )
   
-  #####TRANSFERS######
+
   
-  transfersDF <- data.frame(Player=c('Placeholder'),
-                            In=c('Example'),
-                            Out=c('Example'),
-                            BeforeGameweek=c('1'))
+
+  # Create sanitized transfers dataframe for display
+  transfers_display <- transfers_df %>%
+    mutate(player_out=as.numeric(player_out)) %>%
+    mutate(player_in=as.numeric(player_in)) %>%
+    left_join(playerscopy[, c("id", "Name")], by = c("player_out" = "id")) %>%
+    left_join(playerscopy[, c("id", "Name")], by = c("player_in" = "id")) %>%
+    select(manager, 
+           player_out_name = Name.x, 
+           player_in_name = Name.y, 
+           before_gw) %>%
+    rename(Manager = manager,
+           "Player Out" = player_out_name,
+           "Player In" = player_in_name,
+           "Before GW" = before_gw)
 
   output$transfers <- DT::renderDataTable({
-    datatable(transfersDF,
+    datatable(transfers_display,  # Use transfers_display instead of transfers_df
               rownames=FALSE,
               class = 'table-striped table-hover',
               options=list(
@@ -461,7 +502,7 @@ options(DT.options = list(paging=FALSE))
                 responsive = TRUE,
                 columnDefs = list(list(className = 'dt-center', targets = '_all'))
               )) %>%
-    formatStyle('Player', backgroundColor = '#37003c', color = 'white', fontWeight = 'bold')
+    formatStyle('Manager', backgroundColor = '#37003c', color = 'white', fontWeight = 'bold')
   })
   
   orderDF <- data.frame(Pick=c('1','2','3','4'),
