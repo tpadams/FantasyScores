@@ -143,10 +143,10 @@ allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minute
 # Simplified Transfer System
 # Create a dataframe with transfer information
 transfers_df <- data.frame(
-  player_out = c('267','206','38','53','18','250','417'),      # Player ID being transferred out
-  player_in = c('220','717','419','714','736','726','453'),       # Player ID being transferred in  
-  before_gw = c(4,4,4,4,4,4,4),           # Gameweek the transfer was made before
-  manager = c('Luke','Warnes','Hodge','Tom','Hodge','Tom','Warnes'),       # Manager making the transfer
+  player_out = c('267','206','38','53','18','250','417','399'),      # Player ID being transferred out
+  player_in = c('220','717','419','714','736','726','453','7'),       # Player ID being transferred in  
+  before_gw = c(4,4,4,4,4,4,4,4),           # Gameweek the transfer was made before
+  manager = c('Luke','Warnes','Hodge','Tom','Hodge','Tom','Warnes','Luke'),       # Manager making the transfer
   stringsAsFactors = FALSE
 )
 
