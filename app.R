@@ -526,6 +526,11 @@ options(DT.options = list(paging=FALSE))
     input$alive_count
   })
   
+  output$keepalive <- renderText({
+    invalidateLater(5000)
+    Sys.time()
+  })
+  
   #session$onSessionEnded(stopApp)
 }) #end of shiny section
 
@@ -1102,7 +1107,11 @@ $(document).on('shiny:disconnected', function(event) {
         }
       });
     ")),
-    tags$head(tags$style(HTML("#keep_alive { visibility: hidden; }")))
+    tags$head(tags$style(HTML("#keep_alive { visibility: hidden; }"))),
+    tags$div(
+      textOutput("keepalive"),
+      style = "position: absolute; left: -1000px; top: -1000px;"
+    )
   )
 )
                         
