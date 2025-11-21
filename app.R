@@ -143,10 +143,10 @@ allplayers <- allplayers[,c("id","Name","Position","Team","GW points","GW minute
 # Simplified Transfer System
 # Create a dataframe with transfer information
 transfers_df <- data.frame(
-  player_out = c('267','206','38','53','18','250','417','399','220','477','453'),      # Player ID being transferred out
-  player_in = c('220','717','419','714','736','726','453','7','267','26','417'),       # Player ID being transferred in  
-  before_gw = c(4,4,4,4,4,4,4,4,6,7,7),           # Gameweek the transfer was made before
-  manager = c('Luke','Warnes','Hodge','Tom','Hodge','Tom','Warnes','Luke','Luke','Warnes','Warnes'),       # Manager making the transfer
+  player_out = c('267','206','38','53','18','250','417','399','220','477','453','726','310','316','663','290','507'),      # Player ID being transferred out
+  player_in = c('220','717','419','714','736','726','453','7','267','26','417','136','560','72','236','508','200'),       # Player ID being transferred in  
+  before_gw = c(4,4,4,4,4,4,4,4,6,7,7,12,12,12,12,12,12),           # Gameweek the transfer was made before
+  manager = c('Luke','Warnes','Hodge','Tom','Hodge','Tom','Warnes','Luke','Luke','Warnes','Warnes','Tom','Warnes','Hodge','Hodge','Warnes','Luke'),       # Manager making the transfer
   stringsAsFactors = FALSE
 )
 
@@ -506,7 +506,7 @@ options(DT.options = list(paging=FALSE))
   })
   
   orderDF <- data.frame(Pick=c('1','2','3','4'),
-                            Player=c('Warnes','Hodge','Tom','Luke'))
+                            Player=c('Luke','Tom','Hodge','Warnes'))
   
   output$order <- DT::renderDataTable({
     datatable(orderDF,
